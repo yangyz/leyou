@@ -36,6 +36,11 @@ public class CategoryServiceImpl implements CategoryService {
         return this.categoryMapper.select(t);
     }
 
+    /**
+     * 根据品牌id查询分类
+     * @param bid
+     * @return
+     */
     @Override
     public List<Category> queryByBrandId(Long bid) {
         return this.categoryMapper.queryByBrandId(bid);
