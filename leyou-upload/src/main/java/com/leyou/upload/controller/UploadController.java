@@ -24,6 +24,11 @@ public class UploadController {
     @Autowired
     private UploadServiceImpl uploadServiceImpl;
 
+    /**
+     * 图片上传
+     * @param file
+     * @return
+     */
     @PostMapping("image")
     public ResponseEntity<String> uploadImage(@RequestParam("file")MultipartFile file){
         String url= this.uploadServiceImpl.upload(file);

@@ -49,14 +49,15 @@ public class SpecificationController {
      */
     @PutMapping
     public ResponseEntity<Void> updateSpecification(Specification specification){
-
-        int lastLength=2;
-
-        if(specification.getSpecifications().length() == lastLength){
-            System.out.println(specification.getSpecifications().length());
-            this.specificationService.deleteSpecification(specification);
-        }
         this.specificationService.updateSpecification(specification);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteSpecification(@PathVariable("id") Long id){
+        Specification specification = new Specification();
+        specification.setCategoryId(id);
+        this.specificationService.deleteSpecification(specification);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

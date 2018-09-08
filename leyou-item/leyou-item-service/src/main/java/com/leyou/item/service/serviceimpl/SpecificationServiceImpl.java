@@ -24,7 +24,7 @@ public class SpecificationServiceImpl implements SpecificationService {
 
     @Override
     public void saveSpecification(Specification specification) {
-        this.specificationMapper.insertSelective(specification);
+        this.specificationMapper.insert(specification);
     }
 
     @Override

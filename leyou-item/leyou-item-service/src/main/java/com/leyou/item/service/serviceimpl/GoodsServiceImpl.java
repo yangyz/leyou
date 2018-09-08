@@ -48,6 +48,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     private StockMapper stockMapper;
 
+    /**
+     * 分页查询
+     * @param spuQueryByPageParameter
+     * @return
+     */
     @Override
     public PageResult<SpuBo> querySpuByPageAndSort(SpuQueryByPageParameter spuQueryByPageParameter) {
 
@@ -70,6 +75,7 @@ public class GoodsServiceImpl implements GoodsService {
         }
         //3.3 是否排序
         if (StringUtils.isNotBlank(spuQueryByPageParameter.getSortBy())){
+            System.out.println(spuQueryByPageParameter.getSortBy());
             example.setOrderByClause(spuQueryByPageParameter.getSortBy()+(spuQueryByPageParameter.getDesc()? " DESC":" ASC"));
         }
         Page<Spu> pageInfo = (Page<Spu>) this.spuMapper.selectByExample(example);
@@ -94,6 +100,10 @@ public class GoodsServiceImpl implements GoodsService {
         return new PageResult<>(pageInfo.getTotal(),list);
     }
 
+    /**
+     * 保存商品
+     * @param spu
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveGoods(SpuBo spu) {

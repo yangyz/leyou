@@ -102,6 +102,11 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * 根据category的id查询品牌信息
+     * @param cid
+     * @return
+     */
     @GetMapping("cid/{cid}")
     public ResponseEntity<List<Brand>> queryBrandByCategoryId(@PathVariable("cid") Long cid){
         List<Brand> list = this.brandService.queryBrandByCategoryId(cid);

@@ -26,6 +26,11 @@ public class BrandServiceImpl implements BrandService {
     @Autowired
     private BrandMapper brandMapper;
 
+    /**
+     * 分页查询
+     * @param brandQueryByPageParameter
+     * @return
+     */
     @Override
     public PageResult<Brand> queryBrandByPage(BrandQueryByPageParameter brandQueryByPageParameter) {
 
@@ -59,6 +64,11 @@ public class BrandServiceImpl implements BrandService {
         return new PageResult<>(pageInfo.getTotal(),pageInfo.getList());
     }
 
+    /**
+     * 品牌新增
+     * @param brand
+     * @param categories
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBrand(Brand brand, List<Long> categories) {
@@ -71,6 +81,11 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
+    /**
+     * 品牌更新
+     * @param brand
+     * @param categories
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateBrand(Brand brand,List<Long> categories) {
@@ -84,7 +99,12 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
+    /**
+     * 品牌删除
+     * @param id
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBrand(Long id) {
         //删除品牌信息
         this.brandMapper.deleteByPrimaryKey(id);

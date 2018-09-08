@@ -69,9 +69,9 @@ public class UploadServiceImpl implements UploadService {
             StorePath storePath = this.storageClient.uploadFile(
                   file.getInputStream(), file.getSize(), getExtension(file.getOriginalFilename()), null);
 
-            //String url = "http://image.leyou.com/"+file.getOriginalFilename();
+            //String url = "http://image.leyou.com/upload/"+file.getOriginalFilename();
             String url = "http://image.leyou.com/"+storePath.getFullPath();
-            System.out.println(url);
+//            System.out.println(url);
             return url;
         }catch (Exception e){
             return null;
