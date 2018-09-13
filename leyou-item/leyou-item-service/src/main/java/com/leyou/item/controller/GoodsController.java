@@ -88,12 +88,22 @@ public class GoodsController {
 
     /**
      * 商品上下架
-     * @param id
+     * @param ids
      * @return
      */
     @PutMapping("/spu/out/{id}")
-    public ResponseEntity<Void> goodsSoldOut(@PathVariable("id") Long id){
-        this.goodsService.goodsSoldOut(id);
+    public ResponseEntity<Void> goodsSoldOut(@PathVariable("id") String ids){
+
+        String separator="-";
+        if (ids.contains(separator)){
+            String[] goodsId = ids.split(separator);
+            for (String id:goodsId){
+                this.goodsService.goodsSoldOut(Long.parseLong(id));
+            }
+        }
+        else {
+            this.goodsService.goodsSoldOut(Long.parseLong(ids));
+        }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

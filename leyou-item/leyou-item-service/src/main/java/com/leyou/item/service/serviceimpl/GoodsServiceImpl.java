@@ -144,7 +144,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<Sku> skuList = this.skuMapper.selectByExample(example);
         List<Long> skuIdList = new ArrayList<>();
         for (Sku sku : skuList){
-            System.out.println(sku);
+            //System.out.println(sku);
             skuIdList.add(sku.getId());
         }
 
@@ -257,7 +257,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<Sku> oldList = this.skuMapper.selectByExample(e);
 
         /**
-         * 判断是更新还是新增：更新的话，则此时oldList中的数据和skus中的ownSpec是相同的，否则则需要新增
+         * 判断是更新时是否有新的sku被添加：如果对已有数据更新的话，则此时oldList中的数据和skus中的ownSpec是相同的，否则则需要新增
          */
         int count = 0;
         for (Sku sku : skus){
@@ -293,7 +293,6 @@ public class GoodsServiceImpl implements GoodsService {
                     count ++ ;
                 }
             }
-            //System.out.println(skus.size());
             if (count == oldList.size()){
                 List<Sku> addSku = new ArrayList<>();
                 addSku.add(sku);
