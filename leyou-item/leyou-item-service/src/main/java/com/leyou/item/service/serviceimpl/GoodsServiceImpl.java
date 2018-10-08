@@ -14,12 +14,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -144,7 +146,6 @@ public class GoodsServiceImpl implements GoodsService {
         List<Sku> skuList = this.skuMapper.selectByExample(example);
         List<Long> skuIdList = new ArrayList<>();
         for (Sku sku : skuList){
-            //System.out.println(sku);
             skuIdList.add(sku.getId());
         }
 
@@ -171,6 +172,13 @@ public class GoodsServiceImpl implements GoodsService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateGoods(SpuBo spuBo) {
+        /**
+         * 更新策略：
+         *      1.判断tb_spu_detail中的spec_template字段新旧是否一致
+         *      2.如果一致说明修改的只是库存、价格和是否启用，那么就使用update
+         *      3.如果不一致，说明修改了特有属性，那么需要把原来的sku全部删除，然后添加新的sku
+         */
+
         //更新spu
         spuBo.setSaleable(true);
         spuBo.setValid(true);
@@ -179,12 +187,18 @@ public class GoodsServiceImpl implements GoodsService {
 
         //更新spu详情
         SpuDetail spuDetail = spuBo.getSpuDetail();
+        String oldTemp = this.spuDetailMapper.selectByPrimaryKey(spuBo.getId()).getSpecTemplate();
+        if (spuDetail.getSpecTemplate().equals(oldTemp)){
+            //相等，sku update
+            //更新sku和库存信息
+            updateSkuAndStock(spuBo.getSkus(),spuBo.getId(),true);
+        }else {
+            //不等，sku insert
+            //更新sku和库存信息
+            updateSkuAndStock(spuBo.getSkus(),spuBo.getId(),false);
+        }
         spuDetail.setSpuId(spuBo.getId());
         this.spuDetailMapper.updateByPrimaryKeySelective(spuDetail);
-
-        //更新sku和库存信息
-        //更新的过程中可能有新增
-        updateSkuAndStock(spuBo.getSkus(),spuBo.getId());
     }
 
     /**
@@ -249,59 +263,92 @@ public class GoodsServiceImpl implements GoodsService {
 
     }
 
-    private void updateSkuAndStock(List<Sku> skus,Long id) {
+    private void updateSkuAndStock(List<Sku> skus,Long id,boolean tag) {
+        //通过tag判断是insert还是update
+
         //获取当前数据库中spu_id = id的sku信息
         Example e = new Example(Sku.class);
         e.createCriteria().andEqualTo("spuId",id);
         //oldList中保存数据库中spu_id = id 的全部sku
         List<Sku> oldList = this.skuMapper.selectByExample(e);
 
-        /**
-         * 判断是更新时是否有新的sku被添加：如果对已有数据更新的话，则此时oldList中的数据和skus中的ownSpec是相同的，否则则需要新增
-         */
-        int count = 0;
-        for (Sku sku : skus){
-            if (!sku.getEnable()){
-                continue;
-            }
-            for (Sku old : oldList){
-                if (sku.getOwnSpec().equals(old.getOwnSpec())){
-                    //更新
-                    List<Sku> list = this.skuMapper.select(old);
-                    if (sku.getPrice() == null){
-                        sku.setPrice(0L);
+        if (tag){
+            /**
+             * 判断是更新时是否有新的sku被添加：如果对已有数据更新的话，则此时oldList中的数据和skus中的ownSpec是相同的，否则则需要新增
+             */
+            int count = 0;
+            for (Sku sku : skus){
+                if (!sku.getEnable()){
+                    continue;
+                }
+                for (Sku old : oldList){
+                    if (sku.getOwnSpec().equals(old.getOwnSpec())){
+                        //更新
+                        List<Sku> list = this.skuMapper.select(old);
+                        if (sku.getPrice() == null){
+                            sku.setPrice(0L);
+                        }
+                        if (sku.getStock() == null){
+                            sku.setStock(0L);
+                        }
+                        sku.setId(list.get(0).getId());
+                        sku.setCreateTime(list.get(0).getCreateTime());
+                        sku.setSpuId(list.get(0).getSpuId());
+                        sku.setLastUpdateTime(new Date());
+
+                        this.skuMapper.updateByPrimaryKey(sku);
+
+                        //更新库存信息
+                        Stock stock = new Stock();
+                        stock.setSkuId(sku.getId());
+                        stock.setStock(sku.getStock());
+                        this.stockMapper.updateByPrimaryKeySelective(stock);
+
+                        //从oldList中将更新完的数据删除
+                        oldList.remove(old);
+                        break;
+                    }else{
+                        //新增
+                        count ++ ;
                     }
-                    if (sku.getStock() == null){
-                        sku.setStock(0L);
-                    }
-                    sku.setId(list.get(0).getId());
-                    sku.setCreateTime(list.get(0).getCreateTime());
-                    sku.setSpuId(list.get(0).getSpuId());
-                    sku.setLastUpdateTime(new Date());
-
-                    this.skuMapper.updateByPrimaryKey(sku);
-
-                    //更新库存信息
-                    Stock stock = new Stock();
-                    stock.setSkuId(sku.getId());
-                    stock.setStock(sku.getStock());
-                    this.stockMapper.updateByPrimaryKeySelective(stock);
-
-                    break;
-                }else{
-                    //新增
-                    count ++ ;
+                }
+                if (count == oldList.size()){
+                    List<Sku> addSku = new ArrayList<>();
+                    addSku.add(sku);
+                    saveSkuAndStock(addSku,id);
+                    count = 0;
+                }else {
+                    count =0;
                 }
             }
-            if (count == oldList.size()){
-                List<Sku> addSku = new ArrayList<>();
-                addSku.add(sku);
-                saveSkuAndStock(addSku,id);
-                count = 0;
-            }else {
-                count =0;
+            //处理脏数据
+            if (oldList.size() != 0){
+                for (Sku sku : oldList){
+                    this.skuMapper.deleteByPrimaryKey(sku.getId());
+                    Example example = new Example(Stock.class);
+                    example.createCriteria().andEqualTo("skuId",sku.getId());
+                    this.stockMapper.deleteByExample(example);
+                }
             }
+
+        }else {
+            List<Long> ids = oldList.stream().map(Sku::getId).collect(Collectors.toList());
+
+            //删除以前的库存
+            Example example = new Example(Stock.class);
+            example.createCriteria().andIn("skuId",ids);
+            this.stockMapper.deleteByExample(example);
+
+            //删除以前的sku
+            Example example1 = new Example(Sku.class);
+            example1.createCriteria().andEqualTo("spuId",id);
+            this.skuMapper.deleteByExample(example1);
+
+            //新增sku和库存
+            saveSkuAndStock(skus,id);
         }
+
+
     }
 
     private void saveSkuAndStock(List<Sku> skus, Long id) {
