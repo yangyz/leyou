@@ -2,8 +2,12 @@ package com.leyou.item.service;
 
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.bo.SpuBo;
+import com.leyou.item.pojo.Sku;
 import com.leyou.item.pojo.Spu;
+import com.leyou.item.pojo.SpuDetail;
 import com.leyou.parameter.pojo.SpuQueryByPageParameter;
+
+import java.util.List;
 
 /**
  * @Author: 98050
@@ -49,4 +53,18 @@ public interface GoodsService {
      * @param id
      */
     void deleteGoods(long id);
+
+    /**
+     * 根据spu商品id查询详细信息
+     * @param id
+     * @return
+     */
+    SpuDetail querySpuDetailBySpuId(long id);
+
+    /**
+     * 根据Sku的id查询其下所有的sku
+     * @param id
+     * @return
+     */
+    List<Sku> querySkuBySpuId(Long id);
 }

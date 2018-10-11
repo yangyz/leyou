@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.leyou.service</groupId>
+    <groupId>com.leyou.item</groupId>
     <artifactId>leyou-item</artifactId>
     <packaging>pom</packaging>
     <modules>

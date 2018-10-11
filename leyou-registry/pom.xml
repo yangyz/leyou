@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.leyou.common</groupId>
+    <groupId>com.leyou.registry</groupId>
     <artifactId>leyou-registry</artifactId>
 
     <dependencies>

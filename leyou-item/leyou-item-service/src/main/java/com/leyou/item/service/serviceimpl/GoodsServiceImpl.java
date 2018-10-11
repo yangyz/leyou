@@ -263,15 +263,25 @@ public class GoodsServiceImpl implements GoodsService {
 
     }
 
+    @Override
+    public SpuDetail querySpuDetailBySpuId(long id) {
+        return this.spuDetailMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<Sku> querySkuBySpuId(Long id) {
+        Example example = new Example(Sku.class);
+        example.createCriteria().andEqualTo("spuId",id);
+        return this.skuMapper.selectByExample(example);
+    }
+
     private void updateSkuAndStock(List<Sku> skus,Long id,boolean tag) {
         //通过tag判断是insert还是update
-
         //获取当前数据库中spu_id = id的sku信息
         Example e = new Example(Sku.class);
         e.createCriteria().andEqualTo("spuId",id);
         //oldList中保存数据库中spu_id = id 的全部sku
         List<Sku> oldList = this.skuMapper.selectByExample(e);
-
         if (tag){
             /**
              * 判断是更新时是否有新的sku被添加：如果对已有数据更新的话，则此时oldList中的数据和skus中的ownSpec是相同的，否则则需要新增
@@ -283,6 +293,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
                 for (Sku old : oldList){
                     if (sku.getOwnSpec().equals(old.getOwnSpec())){
+                        System.out.println("更新");
                         //更新
                         List<Sku> list = this.skuMapper.select(old);
                         if (sku.getPrice() == null){
@@ -295,15 +306,12 @@ public class GoodsServiceImpl implements GoodsService {
                         sku.setCreateTime(list.get(0).getCreateTime());
                         sku.setSpuId(list.get(0).getSpuId());
                         sku.setLastUpdateTime(new Date());
-
                         this.skuMapper.updateByPrimaryKey(sku);
-
                         //更新库存信息
                         Stock stock = new Stock();
                         stock.setSkuId(sku.getId());
                         stock.setStock(sku.getStock());
                         this.stockMapper.updateByPrimaryKeySelective(stock);
-
                         //从oldList中将更新完的数据删除
                         oldList.remove(old);
                         break;
@@ -312,7 +320,8 @@ public class GoodsServiceImpl implements GoodsService {
                         count ++ ;
                     }
                 }
-                if (count == oldList.size()){
+                if (count == oldList.size() && count != 0){
+                    //当只有一个sku时，更新完因为从oldList中将其移除，所以长度变为0，所以要需要加不为0的条件
                     List<Sku> addSku = new ArrayList<>();
                     addSku.add(sku);
                     saveSkuAndStock(addSku,id);
@@ -330,20 +339,16 @@ public class GoodsServiceImpl implements GoodsService {
                     this.stockMapper.deleteByExample(example);
                 }
             }
-
         }else {
             List<Long> ids = oldList.stream().map(Sku::getId).collect(Collectors.toList());
-
             //删除以前的库存
             Example example = new Example(Stock.class);
             example.createCriteria().andIn("skuId",ids);
             this.stockMapper.deleteByExample(example);
-
             //删除以前的sku
             Example example1 = new Example(Sku.class);
             example1.createCriteria().andEqualTo("spuId",id);
             this.skuMapper.deleteByExample(example1);
-
             //新增sku和库存
             saveSkuAndStock(skus,id);
         }
