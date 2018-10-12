@@ -65,6 +65,9 @@ public class Goods {
      */
     private Map<String, Object> specs;
 
+    public Goods() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -151,5 +154,22 @@ public class Goods {
 
     public void setSpecs(Map<String, Object> specs) {
         this.specs = specs;
+    }
+
+    @Override
+    public String toString() {
+        return "Goods{" +
+                "id=" + id +
+                ", all='" + all + '\'' +
+                ", subTitle='" + subTitle + '\'' +
+                ", brandId=" + brandId +
+                ", cid1=" + cid1 +
+                ", cid2=" + cid2 +
+                ", cid3=" + cid3 +
+                ", createTime=" + createTime +
+                ", price=" + price +
+                ", skus='" + skus + '\'' +
+                ", specs=" + specs +
+                '}';
     }
 }

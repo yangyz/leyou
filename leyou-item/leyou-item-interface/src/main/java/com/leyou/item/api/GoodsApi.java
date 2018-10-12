@@ -4,6 +4,7 @@ import com.leyou.common.pojo.PageResult;
 import com.leyou.item.bo.SpuBo;
 import com.leyou.item.pojo.Sku;
 import com.leyou.item.pojo.SpuDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ import java.util.List;
  * Time: 2018-10-11 20:05
  * Feature:商品服务接口
  */
-@RequestMapping("goods")
+@RequestMapping("/goods")
 public interface GoodsApi {
 
     /**
@@ -37,7 +38,6 @@ public interface GoodsApi {
             @RequestParam(value = "desc", defaultValue = "false") Boolean desc,
             @RequestParam(value = "key", required = false) String key,
             @RequestParam(value = "saleable",defaultValue = "true") Boolean saleable);
-
     /**
      * 根据spu商品id查询详情
      * @param id
@@ -51,6 +51,6 @@ public interface GoodsApi {
      * @param id
      * @return
      */
-    @GetMapping("sku/list")
-    List<Sku> querySkuBySpuId(Long id);
+    @GetMapping("sku/list/{id}")
+    List<Sku> querySkuBySpuId(@PathVariable("id") Long id);
 }

@@ -7,6 +7,9 @@ spring:
     elasticsearch:
       cluster-name: elasticsearch
       cluster-nodes: 192.168.19.121:9300
+      spring:
+  jackson:
+    default-property-inclusion: non_null # 配置json处理时忽略空值
 eureka:
   client:
     service-url:

@@ -47,6 +47,7 @@ public class GoodsController {
         SpuQueryByPageParameter spuQueryByPageParameter = new SpuQueryByPageParameter(page,rows,sortBy,desc,key,saleable);
         //分页查询spu信息
         PageResult<SpuBo> result = this.goodsService.querySpuByPageAndSort(spuQueryByPageParameter);
+        System.out.println("查询数据量："+result.getTotal());
         if (result == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -94,8 +95,8 @@ public class GoodsController {
      * @param id
      * @return
      */
-    @GetMapping("sku/list")
-    public ResponseEntity<List<Sku>> querySkuBySpuId(Long id){
+    @GetMapping("sku/list/{id}")
+    public ResponseEntity<List<Sku>> querySkuBySpuId(@PathVariable("id") Long id){
         List<Sku> list = this.goodsService.querySkuBySpuId(id);
         if (list == null || list.size() < 1){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -110,7 +111,7 @@ public class GoodsController {
      * @return
      */
     @GetMapping("/spu/detail/{id}")
-    public ResponseEntity<SpuDetail> querySpuDetailById(@PathVariable("id") Long id){
+    public ResponseEntity<SpuDetail> querySpuDetailBySpuId(@PathVariable("id") Long id){
         SpuDetail spuDetail = this.goodsService.querySpuDetailBySpuId(id);
         if (spuDetail == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
