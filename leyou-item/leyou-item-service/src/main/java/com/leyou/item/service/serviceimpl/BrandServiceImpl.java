@@ -134,4 +134,14 @@ public class BrandServiceImpl implements BrandService {
         return this.brandMapper.queryBrandByCategoryId(cid);
     }
 
+    /**
+     * 根据品牌id集合查询品牌信息
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<Brand> queryBrandByBrandIds(List<Long> ids) {
+        return this.brandMapper.selectByIdList(ids);
+    }
+
 }

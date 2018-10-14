@@ -44,7 +44,7 @@ public interface CategoryService {
     void deleteCategory(Long id);
 
     /**
-     * 根据ids查询名字
+     * 根据ids查询分类信息
      * @param asList
      * @return
      */
@@ -55,4 +55,11 @@ public interface CategoryService {
      * @return
      */
     List<Category> queryLast();
+
+    /**
+     * 根据分类id集合查询分类信息
+     * @param ids
+     * @return
+     */
+    List<Category> queryCategoryByIds(List<Long> ids);
 }

@@ -158,6 +158,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * 根据分类id集合查询分类信息
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<Category> queryCategoryByIds(List<Long> ids) {
+        return this.categoryMapper.selectByIdList(ids);
+    }
+
+    /**
      * 查询本节点下所包含的所有叶子节点，用于维护tb_category_brand中间表
      * @param category
      * @param leafNode

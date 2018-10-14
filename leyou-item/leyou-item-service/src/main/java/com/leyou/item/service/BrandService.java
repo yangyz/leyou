@@ -54,4 +54,11 @@ public interface BrandService {
      * @return
      */
     List<Brand> queryBrandByCategoryId(Long cid);
+
+    /**
+     * 根据品牌id集合查询品牌信息
+     * @param ids
+     * @return
+     */
+    List<Brand> queryBrandByBrandIds(List<Long> ids);
 }
