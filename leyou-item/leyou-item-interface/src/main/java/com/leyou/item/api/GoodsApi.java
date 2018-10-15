@@ -17,7 +17,7 @@ import java.util.List;
  * Time: 2018-10-11 20:05
  * Feature:商品服务接口
  */
-@RequestMapping("/goods")
+@RequestMapping("goods")
 public interface GoodsApi {
 
     /**

@@ -48,9 +48,6 @@ public class GoodsController {
         //分页查询spu信息
         PageResult<SpuBo> result = this.goodsService.querySpuByPageAndSort(spuQueryByPageParameter);
         System.out.println("查询数据量："+result.getTotal());
-        if (result == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
         return ResponseEntity.ok(result);
     }
 

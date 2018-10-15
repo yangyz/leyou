@@ -168,6 +168,23 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * 根据cid3查询其所有层级分类
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Category> queryAllCategoryLevelByCid3(Long id) {
+        List<Category> categoryList = new ArrayList<>();
+        Category category = this.categoryMapper.selectByPrimaryKey(id);
+        while (category.getParentId() != 0){
+            categoryList.add(category);
+            category = this.categoryMapper.selectByPrimaryKey(category.getParentId());
+        }
+        categoryList.add(category);
+        return categoryList;
+    }
+
+    /**
      * 查询本节点下所包含的所有叶子节点，用于维护tb_category_brand中间表
      * @param category
      * @param leafNode

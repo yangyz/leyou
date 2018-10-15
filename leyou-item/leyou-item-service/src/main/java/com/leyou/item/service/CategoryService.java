@@ -62,4 +62,11 @@ public interface CategoryService {
      * @return
      */
     List<Category> queryCategoryByIds(List<Long> ids);
+
+    /**
+     * 根据cid3查询其所有层级分类
+     * @param id
+     * @return
+     */
+    List<Category> queryAllCategoryLevelByCid3(Long id);
 }

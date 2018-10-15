@@ -1,5 +1,7 @@
 package com.leyou.bo;
 
+import java.util.Map;
+
 /**
  * @Author: 98050
  * Time: 2018-10-12 20:08
@@ -28,6 +30,11 @@ public class SearchRequest {
     private Boolean descending;
 
     /**
+     * 过滤字段
+     */
+    private Map<String,String> filter;
+
+    /**
      * 每页大小，不从页面接收，而是固定大小
     */
     private static final Integer DEFAULT_SIZE = 20;
@@ -36,6 +43,16 @@ public class SearchRequest {
      * 默认页
      */
     private static final Integer DEFAULT_PAGE = 1;
+
+
+    public Map<String, String> getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Map<String, String> filter) {
+        this.filter = filter;
+    }
+
 
     public String getKey() {
         return key;
