@@ -198,21 +198,28 @@ public class SearchService {
         //整理过滤条件
         Map<String,String> filter = searchRequest.getFilter();
         for (Map.Entry<String,String> entry : filter.entrySet()) {
+            System.out.println("过滤字段："+entry.getKey());
+            System.out.println("过滤字段值："+entry.getValue());
             String key = entry.getKey();
             String value = entry.getValue();
             String regex = "^(\\d+\\.?\\d*)-(\\d+\\.?\\d*)$";
-            if (StringUtils.isNotBlank(key)) {
-                if (value.matches(regex)) {
-                    Double[] nums = NumberUtils.searchNumber(value, regex);
-                    //数值类型进行范围查询   lt:小于  gte:大于等于
-                    filterQueryBuilder.must(QueryBuilders.rangeQuery("specs." + key).gte(nums[0]).lt(nums[1]));
-                } else {
-                    //商品分类和品牌要特殊处理
-                    if (key != "cid3" && key != "brandId") {
-                        key = "specs." + key + ".keyword";
+            if (!"key".equals(key)) {
+                if ("price".equals(key)){
+                    String[] nums = StringUtils.substringBefore(value,"元").split("-");
+                    filterQueryBuilder.must(QueryBuilders.rangeQuery(key).gte(Double.valueOf(nums[0])*100).lt(Double.valueOf(nums[1])*100));
+                }else {
+                    if (value.matches(regex)) {
+                        Double[] nums = NumberUtils.searchNumber(value, regex);
+                        //数值类型进行范围查询   lt:小于  gte:大于等于
+                        filterQueryBuilder.must(QueryBuilders.rangeQuery("specs." + key).gte(nums[0]).lt(nums[1]));
+                    } else {
+                        //商品分类和品牌要特殊处理
+                        if (key != "cid3" && key != "brandId") {
+                            key = "specs." + key + ".keyword";
+                        }
+                        //字符串类型，进行term查询
+                        filterQueryBuilder.must(QueryBuilders.termQuery(key, value));
                     }
-                    //字符串类型，进行term查询
-                    filterQueryBuilder.must(QueryBuilders.termQuery(key, value));
                 }
             } else {
                 break;
@@ -261,6 +268,11 @@ public class SearchService {
                 }
             });
         }
+        for (Map.Entry<String,String> entry : numericalUnits.entrySet()){
+            System.out.println("--------------数值型参数————————————————————");
+            System.out.println("key"+entry.getKey());
+            System.out.println("value"+entry.getValue());
+        }
         //3.聚合计算数值类型的interval
         Map<String,Double> numericalInterval = getNumberInterval(id,numericalUnits.keySet());
         return this.aggForSpec(strSpec,numericalInterval,numericalUnits,basicQuery);
@@ -280,7 +292,7 @@ public class SearchService {
         queryBuilder.withQuery(QueryBuilders.termQuery("cid3",id.toString())).withSourceFilter(new FetchSourceFilter(new String[]{""},null)).withPageable(PageRequest.of(0,1));
         //添加stats类型的聚合,同时返回avg、max、min、sum、count等
         for (String key : keySet){
-            queryBuilder.addAggregation(AggregationBuilders.stats(key).field("specs."+key));
+            queryBuilder.addAggregation(AggregationBuilders.stats(key).field("specs." + key));
         }
         Map<String,Aggregation> aggregationMap = this.elasticsearchTemplate.query(queryBuilder.build(),
                 searchResponse -> searchResponse.getAggregations().asMap()
@@ -334,9 +346,8 @@ public class SearchService {
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
         queryBuilder.withQuery(basicQuery);
         //聚合数值类型
-        for (Map.Entry<String,Double> entry : numericalInterval.entrySet()){
-            //System.out.println(entry.getKey()+":"+entry.getValue());
-            queryBuilder.addAggregation(AggregationBuilders.histogram(entry.getKey()).field("specs."+entry.getKey()).interval(entry.getValue()).minDocCount(1));
+        for (Map.Entry<String,Double> entry : numericalInterval.entrySet()) {
+            queryBuilder.addAggregation(AggregationBuilders.histogram(entry.getKey()).field("specs." + entry.getKey()).interval(entry.getValue()).minDocCount(1));
         }
         //聚合字符串
         for (String key :strSpec){
