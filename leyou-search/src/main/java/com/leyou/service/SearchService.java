@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 98050
@@ -198,15 +199,18 @@ public class SearchService {
         //整理过滤条件
         Map<String,String> filter = searchRequest.getFilter();
         for (Map.Entry<String,String> entry : filter.entrySet()) {
-            System.out.println("过滤字段："+entry.getKey());
-            System.out.println("过滤字段值："+entry.getValue());
             String key = entry.getKey();
             String value = entry.getValue();
             String regex = "^(\\d+\\.?\\d*)-(\\d+\\.?\\d*)$";
             if (!"key".equals(key)) {
                 if ("price".equals(key)){
-                    String[] nums = StringUtils.substringBefore(value,"元").split("-");
-                    filterQueryBuilder.must(QueryBuilders.rangeQuery(key).gte(Double.valueOf(nums[0])*100).lt(Double.valueOf(nums[1])*100));
+                    if (!value.contains("元以上")) {
+                        String[] nums = StringUtils.substringBefore(value, "元").split("-");
+                        filterQueryBuilder.must(QueryBuilders.rangeQuery(key).gte(Double.valueOf(nums[0]) * 100).lt(Double.valueOf(nums[1]) * 100));
+                    }else {
+                        String num = StringUtils.substringBefore(value,"元以上");
+                        filterQueryBuilder.must(QueryBuilders.rangeQuery(key).gte(Double.valueOf(num)*100));
+                    }
                 }else {
                     if (value.matches(regex)) {
                         Double[] nums = NumberUtils.searchNumber(value, regex);
@@ -237,10 +241,8 @@ public class SearchService {
      * @return
      */
     private List<Map<String, Object>> getSpec(Long id, QueryBuilder basicQuery) {
-        System.out.println("id:"+id);
         //不管是全局参数还是sku参数，只要是搜索参数，都根据分类id查询出来
         String specsJSONStr = this.specClient.querySpecificationByCategoryId(id).getBody();
-        System.out.println("json"+specsJSONStr);
         //1.将规格反序列化为集合
         List<Map<String,Object>> specs = null;
         specs = JsonUtils.nativeRead(specsJSONStr, new TypeReference<List<Map<String, Object>>>() {
@@ -259,19 +261,12 @@ public class SearchService {
             params.forEach(param ->{
                 if ((boolean)param.get(searchable)){
                     if (param.containsKey(numerical) && (boolean)param.get(numerical)){
-                        System.out.println("key:"+param.get(k));
-                        System.out.println("value:"+param.get(unit));
                         numericalUnits.put(param.get(k).toString(),param.get(unit).toString());
                     }else {
                         strSpec.add(param.get(k).toString());
                     }
                 }
             });
-        }
-        for (Map.Entry<String,String> entry : numericalUnits.entrySet()){
-            System.out.println("--------------数值型参数————————————————————");
-            System.out.println("key"+entry.getKey());
-            System.out.println("value"+entry.getValue());
         }
         //3.聚合计算数值类型的interval
         Map<String,Double> numericalInterval = getNumberInterval(id,numericalUnits.keySet());
@@ -318,13 +313,15 @@ public class SearchService {
      * @return
      */
     private double getInterval(double min, double max, Double sum) {
-        //要显示6个区间
-        double interval = (max - min) /6.0d;
+        //显示7个区间
+        double interval = (max - min) / 6.0d;
         //判断是否是小数
         if (sum.intValue() == sum){
             //不是小数，要取整十、整百
             int length = StringUtils.substringBefore(String.valueOf(interval),".").length();
             double factor = Math.pow(10.0,length - 1);
+            System.out.println("factor:"+factor);
+            System.out.println("interval:"+Math.round(interval / factor)*factor);
             return Math.round(interval / factor)*factor;
         }else {
             //是小数的话就保留一位小数
@@ -358,6 +355,7 @@ public class SearchService {
         Map<String,Aggregation> aggregationMap = this.elasticsearchTemplate.query(queryBuilder.build(), SearchResponse :: getAggregations).asMap();
 
         //解析数值类型
+        System.out.println("-------------------解析数值类型--------------------------");
         for (Map.Entry<String,Double> entry :numericalInterval.entrySet()){
             Map<String,Object> spec = new HashMap<>();
             String key = entry.getKey();
@@ -378,18 +376,31 @@ public class SearchService {
                     end = NumberUtils.scale(end,2);
                     return begin + "-" + end;
                 }
-            }));
+            }).collect(Collectors.toList()));
+            System.out.println("\nk:"+key);
+            System.out.println("unit:"+numericalUnits.get(key));
+            System.out.print("options:");
+            for (InternalHistogram.Bucket bucket : histogram.getBuckets()){
+                System.out.print(bucket.getKeyAsString()+"  ");
+            }
             specs.add(spec);
         }
 
         //解析字符串类型
+        System.out.println("\n----------------解析字符类型---------------------");
         strSpec.forEach(key -> {
             Map<String,Object> spec = new HashMap<>();
             spec.put("k",key);
             StringTerms terms = (StringTerms) aggregationMap.get(key);
-            spec.put("options",terms.getBuckets().stream().map((Function<StringTerms.Bucket, Object>) StringTerms.Bucket::getKeyAsString));
+            System.out.println("\nkey:"+key);
+            System.out.print("options:");
+            for (StringTerms.Bucket bucket : terms.getBuckets()){
+                System.out.print(bucket.getKeyAsString()+"  ");
+            }
+            spec.put("options",terms.getBuckets().stream().map((Function<StringTerms.Bucket, Object>) StringTerms.Bucket::getKeyAsString).collect(Collectors.toList()));
             specs.add(spec);
         });
+        System.out.println();
         return specs;
     }
 
@@ -408,11 +419,15 @@ public class SearchService {
         return this.brandClient.queryBrandByIds(bids);
     }
 
+    /**
+     * 解析商品分类聚合结果，其中都是三级分类
+     * @param aggregation
+     * @return
+     */
     private List<Category> getCategoryAggResult(Aggregation aggregation) {
         LongTerms brandAgg = (LongTerms) aggregation;
         List<Long> cids = new ArrayList<>();
         for (LongTerms.Bucket bucket : brandAgg.getBuckets()){
-            System.out.println("id:"+bucket.getKeyAsNumber().longValue());
             cids.add(bucket.getKeyAsNumber().longValue());
         }
         //根据id查询分类名称

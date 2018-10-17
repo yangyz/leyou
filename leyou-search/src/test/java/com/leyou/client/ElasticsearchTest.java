@@ -9,6 +9,7 @@ import com.leyou.repository.GoodsRepository;
 import com.leyou.service.SearchService;
 import com.leyou.utils.NumberUtils;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.InternalHistogram;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
@@ -25,8 +28,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 98050
@@ -85,18 +90,17 @@ public class ElasticsearchTest {
     public void testAgg(){
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
         // 不查询任何结果
-        queryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{""}, null));
-        // 1、添加一个新的聚合，聚合类型为terms，聚合名称为brands，聚合字段为brand
-        queryBuilder.addAggregation(AggregationBuilders.histogram("price").field("price").interval(50000));
-        // 2、查询,需要把结果强转为AggregatedPage类型
-        Map<String,Aggregation> aggregationMap = this.elasticsearchTemplate.query(queryBuilder.build(), SearchResponse :: getAggregations).asMap();
-        // 3、解析
-        // 3.1、从结果中取出名为brands的那个聚合，
-        // 因为是利用String类型字段来进行的term聚合，所以结果要强转为StringTerm类型
-        InternalHistogram histogram = (InternalHistogram) aggregationMap.get("price");
-        histogram.getBuckets().forEach(bucket -> {
-            System.out.println(bucket.getKeyAsString());
-        });
+        queryBuilder.withQuery(QueryBuilders.termQuery("cid3",76)).withSourceFilter(new FetchSourceFilter(new String[]{""},null)).withPageable(PageRequest.of(0,1));
+        Page<Goods> goodsPage = this.goodsRepository.search(queryBuilder.build());
+        goodsPage.forEach(System.out::println);
+    }
 
+    @Test
+    public void testList(){
+        List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+        List<Integer> squareNums = nums.stream().
+                map(n -> n * n).
+                collect(Collectors.toList());
+        System.out.println((nums.stream().map(n -> n*n)));
     }
 }

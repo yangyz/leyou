@@ -71,7 +71,8 @@ public class SearchResult<Goods> extends PageResult<Goods> {
         this.brands = brands;
     }
 
-    public SearchResult(Long total,Long totalPage, List<Goods> item,List<Category> categories, List<Brand> brands, List<Map<String,Object>> specs){
+    public SearchResult(Long total,Long totalPage, List<Goods> item,List<Category> categories,
+                        List<Brand> brands, List<Map<String,Object>> specs){
         super(total,totalPage,item);
         this.categories = categories;
         this.brands = brands;
