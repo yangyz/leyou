@@ -3,17 +3,10 @@ package com.leyou.client;
 import com.leyou.LySearchService;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.bo.SpuBo;
-import com.leyou.item.pojo.Specification;
 import com.leyou.pojo.Goods;
 import com.leyou.repository.GoodsRepository;
-import com.leyou.service.SearchService;
-import com.leyou.utils.NumberUtils;
-import org.elasticsearch.action.search.SearchResponse;
+import com.leyou.service.serviceimpl.SearchServiceImpl;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.InternalHistogram;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +43,7 @@ public class ElasticsearchTest {
     private SpuClient spuClient;
 
     @Autowired
-    private SearchService searchService;
+    private SearchServiceImpl searchService;
 
     @Test
     public void createIndex(){
@@ -103,4 +92,60 @@ public class ElasticsearchTest {
                 collect(Collectors.toList());
         System.out.println((nums.stream().map(n -> n*n)));
     }
+
+    @Test
+    public void testA(){
+        List<Integer> list = Arrays.asList(1,2,3,4);
+        List<Integer> result = new ArrayList<>();
+        for (Integer i : list){
+            for (Integer j : list){
+                for (Integer k : list){
+                    if (!i.equals(j) && !j.equals(k) && !i.equals(k)) {
+                        result.add(i * 100 + j * 10 + k);
+                    }
+                }
+            }
+        }
+        LinkedHashSet<Integer> set = new LinkedHashSet<>();
+        set.addAll(result);
+        System.out.println("一共能组成："+set.size()+"个不重复的三位数");
+        for (Integer s : set){
+            System.out.println(s);
+        }
+    }
+
+    public static void testC(int a,int b,int c){
+        if (a>0&&b>0&&c>0&&a+b>c&&a+c>b&&b+c>a){
+            System.out.println("三角形");
+        }else{
+            System.out.println("不能组成三角形");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("a=");
+        int a =scanner.nextInt();
+        System.out.print("b=");
+        int b =scanner.nextInt();
+        System.out.print("c=");
+        int c =scanner.nextInt();
+        testC(a,b,c);
+
+    }
+    static  void  SelectSort(int A[],int n){
+        int min;
+        for(int i=0;i<n-1;i++){
+            min=i;
+            for(int j=i+1;j<n;j++){
+                if(A[j]<A[min]) min=j;
+            }
+            if(min!=i){
+                int temp=A[min];
+                A[min]=A[i];
+                A[i]=temp;
+            }
+        }
+    }
+
 }

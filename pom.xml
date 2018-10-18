@@ -13,6 +13,7 @@
         <module>leyou-common</module>
         <module>leyou-upload</module>
         <module>leyou-search</module>
+        <module>leyou-goods-web</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -91,6 +92,12 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.webmvc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-thymeleaf</artifactId>
+                <version>RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

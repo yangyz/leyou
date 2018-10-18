@@ -159,7 +159,8 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
 
-        SpuBo spuBo = new SpuBo();
+        SpuBo spuBo = new SpuBo(spu.getBrandId(),spu.getCid1(),spu.getCid2(),spu.getCid3(),spu.getTitle(),
+                spu.getSubTitle(),spu.getSaleable(),spu.getValid(),spu.getCreateTime(),spu.getLastUpdateTime());
         spuBo.setSpuDetail(spuDetail);
         spuBo.setSkus(skuList);
         return spuBo;
