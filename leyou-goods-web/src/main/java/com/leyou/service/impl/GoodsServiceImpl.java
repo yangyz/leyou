@@ -79,7 +79,7 @@ public class GoodsServiceImpl implements GoodsService {
 
         //按照组构造规格参数
         List<Map<String,Object>> groups = this.getGroupsSpec(allSpecs,specName,specValue);
-        groups.forEach(System.out::println);
+
 
 
         Map<String,Object> map = new HashMap<>();

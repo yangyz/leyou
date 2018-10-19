@@ -1,5 +1,6 @@
 package com.leyou.controller;
 
+import com.leyou.service.GoodsHtmlService;
 import com.leyou.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,10 +23,17 @@ public class GoodsController {
     @Autowired
     private GoodsService goodsService;
 
+    @Autowired
+    private GoodsHtmlService goodsHtmlService;
+
     @GetMapping("{id}.html")
     public String toItemPage(Model model,@PathVariable("id")Long id){
+        //加载数据
         Map<String,Object> modelMap =  this.goodsService.loadModel(id);
+        //把数据放入模型中
         model.addAllAttributes(modelMap);
+        //页面静态化
+        this.goodsHtmlService.asyncExecute(id);
         return "item";
     }
 }
