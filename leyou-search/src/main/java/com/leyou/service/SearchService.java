@@ -28,4 +28,18 @@ public interface SearchService {
      * @return
      */
     SearchResult<Goods> search(SearchRequest searchRequest);
+
+
+    /**
+     * 根据goods的id创建相应的索引
+     * @param id
+     * @throws IOException
+     */
+    void createIndex(Long id) throws IOException;
+
+    /**
+     * 根据goods的id删除相应的索引
+     * @param id
+     */
+    void deleteIndex(Long id);
 }

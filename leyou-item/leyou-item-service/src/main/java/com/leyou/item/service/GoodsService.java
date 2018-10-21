@@ -67,4 +67,11 @@ public interface GoodsService {
      * @return
      */
     List<Sku> querySkuBySpuId(Long id);
+
+    /**
+     * 发送校区到mq
+     * @param id
+     * @param type
+     */
+    void sendMessage(Long id,String type);
 }

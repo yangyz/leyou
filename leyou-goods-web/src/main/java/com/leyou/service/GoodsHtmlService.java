@@ -14,9 +14,14 @@ public interface GoodsHtmlService {
     void createHtml(Long spuId);
 
     /**
-     * 新建线程处理页面静态化
+     * 新建线程处理页面静态化，Controller调用
      * @param spuId
      */
     void asyncExecute(Long spuId);
 
+    /**
+     * 删除html页面
+     * @param id
+     */
+    void deleteHtml(Long id);
 }

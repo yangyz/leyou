@@ -55,6 +55,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!--amqp启动器-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.leyou.item.interface</groupId>
             <artifactId>leyou-item-interface</artifactId>

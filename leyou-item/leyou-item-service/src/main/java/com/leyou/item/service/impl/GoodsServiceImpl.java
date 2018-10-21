@@ -1,4 +1,4 @@
-package com.leyou.item.service.serviceimpl;
+package com.leyou.item.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -10,18 +10,19 @@ import com.leyou.item.service.CategoryService;
 import com.leyou.item.service.GoodsService;
 import com.leyou.parameter.pojo.SpuQueryByPageParameter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +50,11 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoodsServiceImpl.class);
 
     /**
      * 分页查询
@@ -124,6 +130,9 @@ public class GoodsServiceImpl implements GoodsService {
 
         //保存sku和库存信息
         saveSkuAndStock(spu.getSkus(),spu.getId());
+
+        //发送消息到mq
+        this.sendMessage(spu.getId(),"insert");
     }
 
     /**
@@ -200,6 +209,9 @@ public class GoodsServiceImpl implements GoodsService {
         }
         spuDetail.setSpuId(spuBo.getId());
         this.spuDetailMapper.updateByPrimaryKeySelective(spuDetail);
+
+        //发送消息到mq
+        this.sendMessage(spuBo.getId(),"update");
     }
 
     /**
@@ -224,7 +236,6 @@ public class GoodsServiceImpl implements GoodsService {
                 sku.setEnable(false);
                 this.skuMapper.updateByPrimaryKeySelective(sku);
             }
-
         }else {
             //上架
             oldSpu.setSaleable(true);
@@ -236,6 +247,8 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
 
+        //发送消息到mq
+        this.sendMessage(id,"update");
     }
 
     /**
@@ -262,6 +275,9 @@ public class GoodsServiceImpl implements GoodsService {
             this.stockMapper.deleteByPrimaryKey(sku.getId());
         }
 
+        //发送消息到mq
+        this.sendMessage(id,"delete");
+
     }
 
     @Override
@@ -274,6 +290,20 @@ public class GoodsServiceImpl implements GoodsService {
         Example example = new Example(Sku.class);
         example.createCriteria().andEqualTo("spuId",id);
         return this.skuMapper.selectByExample(example);
+    }
+
+    /**
+     * 发送消息到mq，生产者
+     * @param id
+     * @param type
+     */
+    @Override
+    public void sendMessage(Long id, String type) {
+        try {
+            this.amqpTemplate.convertAndSend("item." + type, id);
+        }catch (Exception e){
+            LOGGER.error("{}商品消息发送异常，商品id：{}",type,id,e);
+        }
     }
 
     private void updateSkuAndStock(List<Sku> skus,Long id,boolean tag) {

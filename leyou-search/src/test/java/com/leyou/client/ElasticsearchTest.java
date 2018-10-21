@@ -5,7 +5,7 @@ import com.leyou.common.pojo.PageResult;
 import com.leyou.item.bo.SpuBo;
 import com.leyou.pojo.Goods;
 import com.leyou.repository.GoodsRepository;
-import com.leyou.service.serviceimpl.SearchServiceImpl;
+import com.leyou.service.impl.SearchServiceImpl;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Test;
 import org.junit.runner.RunWith;

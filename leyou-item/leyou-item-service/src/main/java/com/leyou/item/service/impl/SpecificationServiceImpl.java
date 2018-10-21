@@ -1,4 +1,4 @@
-package com.leyou.item.service.serviceimpl;
+package com.leyou.item.service.impl;
 
 import com.leyou.item.mapper.SpecificationMapper;
 import com.leyou.item.pojo.Specification;

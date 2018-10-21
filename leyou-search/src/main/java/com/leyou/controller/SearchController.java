@@ -3,7 +3,7 @@ package com.leyou.controller;
 import com.leyou.bo.SearchRequest;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.pojo.Goods;
-import com.leyou.service.serviceimpl.SearchServiceImpl;
+import com.leyou.service.impl.SearchServiceImpl;
 import com.leyou.vo.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

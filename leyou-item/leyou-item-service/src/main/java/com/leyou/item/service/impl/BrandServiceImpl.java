@@ -1,4 +1,4 @@
-package com.leyou.item.service.serviceimpl;
+package com.leyou.item.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

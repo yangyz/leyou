@@ -1,9 +1,10 @@
-package com.leyou.service.serviceimpl;
+package com.leyou.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leyou.bo.SearchRequest;
 import com.leyou.client.BrandClient;
+import com.leyou.item.bo.SpuBo;
 import com.leyou.item.pojo.*;
 import com.leyou.service.SearchService;
 import com.leyou.utils.JsonUtils;
@@ -191,6 +192,30 @@ public class SearchServiceImpl implements SearchService {
         }
         //4.封装结果，返回
         return new SearchResult<>(total, (long)totalPage,pageInfo.getContent(),categories,brands,specs);
+    }
+
+    /**
+     * 创建索引
+     * @param id
+     */
+    @Override
+    public void createIndex(Long id) throws IOException {
+        SpuBo spuBo = this.goodsClient.queryGoodsById(id);
+        //构建商品
+        Goods goods = this.buildGoods(spuBo);
+
+        //保存数据到索引库中
+        this.goodsRepository.save(goods);
+    }
+
+    /**
+     * 删除索引
+     * @param id
+     */
+    @Override
+    public void deleteIndex(Long id) {
+
+        this.goodsRepository.deleteById(id);
     }
 
     /**

@@ -69,4 +69,10 @@ public class GoodsHtmlServiceImpl implements GoodsHtmlService {
     public void asyncExecute(Long spuId) {
         ThreadUtils.execute(() ->createHtml(spuId));
     }
+
+    @Override
+    public void deleteHtml(Long id) {
+        File file = new File("D:\\nginx-1.12.2\\html\\item\\"+id+".html");
+        file.deleteOnExit();
+    }
 }

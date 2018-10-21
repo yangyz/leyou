@@ -14,6 +14,7 @@
         <module name="leyou-registry" />
         <module name="leyou-search" />
         <module name="leyou-upload" />
+        <module name="leyou-user" />
       </profile>
     </annotationProcessing>
   </component>
