@@ -1,7 +1,6 @@
 package com.leyou.listener;
 
 import com.leyou.service.GoodsHtmlService;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;

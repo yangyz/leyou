@@ -17,8 +17,9 @@ zuul:
   prefix: /api # 添加路由前缀
   retryable: true
   routes:
-    item-service: /item/**
-    search-service: /search/**
+    item-service: /item/**  #商品微服务
+    search-service: /search/**  #搜索微服务
+    user-service: /user/**  #用户微服务
   ignored-services:
     - upload-service # 忽略upload-service服务
 ribbon:

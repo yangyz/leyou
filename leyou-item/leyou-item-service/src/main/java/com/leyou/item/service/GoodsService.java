@@ -1,11 +1,10 @@
 package com.leyou.item.service;
 
 import com.leyou.common.pojo.PageResult;
-import com.leyou.item.bo.SpuBo;
-import com.leyou.item.pojo.Sku;
-import com.leyou.item.pojo.Spu;
 import com.leyou.item.pojo.SpuDetail;
 import com.leyou.parameter.pojo.SpuQueryByPageParameter;
+import com.leyou.item.bo.SpuBo;
+import com.leyou.item.pojo.Sku;
 
 import java.util.List;
 

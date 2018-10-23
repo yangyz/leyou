@@ -1,8 +1,8 @@
 package com.leyou.item.bo;
 
-import com.leyou.item.pojo.Sku;
 import com.leyou.item.pojo.Spu;
 import com.leyou.item.pojo.SpuDetail;
+import com.leyou.item.pojo.Sku;
 
 import javax.persistence.Transient;
 import java.util.Date;

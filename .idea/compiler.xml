@@ -13,8 +13,10 @@
         <module name="leyou-item-service" />
         <module name="leyou-registry" />
         <module name="leyou-search" />
+        <module name="leyou-sms" />
         <module name="leyou-upload" />
-        <module name="leyou-user" />
+        <module name="leyou-user-interface" />
+        <module name="leyou-user-service" />
       </profile>
     </annotationProcessing>
   </component>

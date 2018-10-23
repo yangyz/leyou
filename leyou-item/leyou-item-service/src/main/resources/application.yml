@@ -19,8 +19,8 @@ spring:
       retry:
         enabled: true
         multiplier: 2
-        initial-interval: 1000ms
-        max-interval: 10000ms
+        initial-interval: 10000ms
+        max-interval: 210000ms
       exchange: leyou.item.exchange
     publisher-confirms: true
 eureka:

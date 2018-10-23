@@ -1,10 +1,15 @@
 package com.leyou.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.leyou.client.*;
-import com.leyou.item.bo.SpuBo;
-import com.leyou.item.pojo.*;
 import com.leyou.service.GoodsService;
+import com.leyou.client.BrandClient;
+import com.leyou.client.CategoryClient;
+import com.leyou.client.GoodsClient;
+import com.leyou.item.bo.SpuBo;
+import com.leyou.item.pojo.Sku;
+import com.leyou.item.pojo.SpuDetail;
+import com.leyou.item.pojo.Brand;
+import com.leyou.item.pojo.Category;
 import com.leyou.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

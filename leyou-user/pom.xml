@@ -11,6 +11,11 @@
 
     <groupId>com.leyou.user</groupId>
     <artifactId>leyou-user</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>leyou-user-interface</module>
+        <module>leyou-user-service</module>
+    </modules>
 
 
 </project>

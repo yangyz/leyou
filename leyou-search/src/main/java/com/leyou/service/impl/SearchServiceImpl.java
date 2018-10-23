@@ -2,19 +2,21 @@ package com.leyou.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.leyou.bo.SearchRequest;
 import com.leyou.client.BrandClient;
-import com.leyou.item.bo.SpuBo;
-import com.leyou.item.pojo.*;
-import com.leyou.service.SearchService;
-import com.leyou.utils.JsonUtils;
-import com.leyou.utils.NumberUtils;
-import com.leyou.vo.SearchResult;
 import com.leyou.client.CategoryClient;
 import com.leyou.client.GoodsClient;
 import com.leyou.client.SpecClient;
-import com.leyou.pojo.Goods;
+import com.leyou.item.bo.SpuBo;
+import com.leyou.item.pojo.*;
 import com.leyou.repository.GoodsRepository;
+import com.leyou.service.SearchService;
+import com.leyou.bo.SearchRequest;
+
+
+import com.leyou.utils.JsonUtils;
+import com.leyou.utils.NumberUtils;
+import com.leyou.vo.SearchResult;
+import com.leyou.pojo.Goods;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.*;
