@@ -1,5 +1,7 @@
 package com.leyou.user.service;
 
+import com.leyou.user.pojo.User;
+
 /**
  * @Author: 98050
  * @Time: 2018-10-21 18:41
@@ -20,4 +22,20 @@ public interface UserService {
      * @return
      */
     Boolean sendVerifyCode(String phone);
+
+    /**
+     * 用户注册
+     * @param user
+     * @param code
+     * @return
+     */
+    Boolean register(User user, String code);
+
+    /**
+     * 用户验证
+     * @param username
+     * @param password
+     * @return
+     */
+    User queryUser(String username, String password);
 }
