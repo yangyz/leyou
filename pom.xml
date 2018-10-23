@@ -16,6 +16,7 @@
         <module>leyou-goods-web</module>
         <module>leyou-user</module>
         <module>leyou-sms</module>
+        <module>leyou-authentication</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -49,6 +50,7 @@
         <redis.version>2.1.0.M4</redis.version>
         <spring.security.version>5.1.0.RELEASE</spring.security.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
+        <jwt.version>0.9.1</jwt.version>
     </properties>
 
     <dependencyManagement>
@@ -161,6 +163,12 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
             </dependency>
 
         </dependencies>
