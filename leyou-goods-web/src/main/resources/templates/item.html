@@ -106,15 +106,6 @@
     for (let s in specialParamName){
         index[s] =0;
 	}
-
-	console.log(index);
-    console.log(skus);
-    console.log(specName);
-    console.log(specValue);
-	console.log(specialParamName)
-	console.log(specialParamValue)
-	console.log(groups);
-
 </script>
 </head>
 
@@ -647,19 +638,15 @@
                 return this.sku.images ? this.sku.images.split(",") : [''];
 			},
 			group(){
-                // groups.forEach(group => {
-                //     group.params.forEach(param => {
-                //         if (Object.values(specialParamName).includes(param.name)){
-                //             param.value = JSON.parse(this.sku.ownSpec)[param.name];
-                //         }
-                //     })
-                // });
-				//return groups;
+                groups.forEach(group => {
+                    group.params.forEach(param => {
+                        if (Object.values(specialParamName).includes(param.name)){
+                            param.value = JSON.parse(this.sku.ownSpec)[param.name];
+                        }
+                    })
+                });
+				return groups;
 			}
-		},
-		created(){
-            console.log(this.specialParamName)
-			console.log(this.specialParamValue)
 		},
         components:{
             lyTop: () => import('/js/pages/top.js')
