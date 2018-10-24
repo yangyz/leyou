@@ -9,6 +9,7 @@
         <module name="leyou-api-gateway" />
         <module name="leyou-authentication-common" />
         <module name="leyou-authentication-service" />
+        <module name="leyou-cart" />
         <module name="leyou-common" />
         <module name="leyou-goods-web" />
         <module name="leyou-item-interface" />
