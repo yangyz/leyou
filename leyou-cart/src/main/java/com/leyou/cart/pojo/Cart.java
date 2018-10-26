@@ -24,7 +24,7 @@ public class Cart {
     /**
      * 图片
      */
-    private String image;
+    private String images;
 
     /**
      * 加入购物车时的价格
@@ -65,12 +65,12 @@ public class Cart {
         this.title = title;
     }
 
-    public String getImage() {
-        return image;
+    public String getImages() {
+        return images;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImages(String images) {
+        this.images = images;
     }
 
     public Long getPrice() {
@@ -95,5 +95,18 @@ public class Cart {
 
     public void setOwnSpec(String ownSpec) {
         this.ownSpec = ownSpec;
+    }
+
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "userId=" + userId +
+                ", skuId=" + skuId +
+                ", title='" + title + '\'' +
+                ", images='" + images + '\'' +
+                ", price=" + price +
+                ", num=" + num +
+                ", ownSpec='" + ownSpec + '\'' +
+                '}';
     }
 }
