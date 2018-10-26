@@ -306,6 +306,16 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+    /**
+     * 根据skuId查询sku
+     * @param id
+     * @return
+     */
+    @Override
+    public Sku querySkuById(Long id) {
+        return this.skuMapper.selectByPrimaryKey(id);
+    }
+
     private void updateSkuAndStock(List<Sku> skus,Long id,boolean tag) {
         //通过tag判断是insert还是update
         //获取当前数据库中spu_id = id的sku信息

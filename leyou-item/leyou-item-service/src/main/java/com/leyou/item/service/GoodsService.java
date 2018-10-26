@@ -73,4 +73,11 @@ public interface GoodsService {
      * @param type
      */
     void sendMessage(Long id,String type);
+
+    /**
+     * 查询sku根据id
+     * @param id
+     * @return
+     */
+    Sku querySkuById(Long id);
 }

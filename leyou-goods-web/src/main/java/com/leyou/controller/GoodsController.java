@@ -27,13 +27,16 @@ public class GoodsController {
     private GoodsHtmlService goodsHtmlService;
 
     @GetMapping("{id}.html")
-    public String toItemPage(Model model,@PathVariable("id")Long id){
+    public String toItemPage(Model model,@PathVariable("id")String id){
+        System.out.println(id);
+        Long idN = Long.parseLong(id);
         //加载数据
-        Map<String,Object> modelMap =  this.goodsService.loadModel(id);
+        Map<String, Object> modelMap = this.goodsService.loadModel(idN);
         //把数据放入模型中
         model.addAllAttributes(modelMap);
         //页面静态化
-        this.goodsHtmlService.asyncExecute(id);
+        this.goodsHtmlService.asyncExecute(idN);
         return "item";
+
     }
 }

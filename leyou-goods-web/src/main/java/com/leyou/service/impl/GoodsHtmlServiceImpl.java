@@ -36,6 +36,7 @@ public class GoodsHtmlServiceImpl implements GoodsHtmlService {
 
     @Override
     public void createHtml(Long spuId) {
+        System.out.println("静态化："+spuId);
         PrintWriter writer = null;
 
         //获取页面数据

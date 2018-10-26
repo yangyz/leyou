@@ -32,7 +32,7 @@ public final class CookieUtils {
 	}
 
 	/**
-	 * 得到Cookie的值,
+	 * 得到Cookie的值
 	 * 
 	 * @param request
 	 * @param cookieName

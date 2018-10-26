@@ -157,4 +157,13 @@ public class GoodsController {
         }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/sku/{id}")
+    public ResponseEntity<Sku> querySkuById(@PathVariable("id") Long id){
+        Sku sku = this.goodsService.querySkuById(id);
+        if (sku == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(sku);
+    }
 }

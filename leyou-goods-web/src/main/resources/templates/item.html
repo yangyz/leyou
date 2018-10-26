@@ -662,8 +662,12 @@
                 }
             },
             addCart(){
-                ly.http.get("/auth/verify").then(res => {
+                ly.verifyUser().then(res => {
                     //已经登录发送消息到后台，保存到redis中
+					ly.http.post("/cart",{skuId:this.sku.id,num:this.num}).then(res => {
+					    //window.location = "http://www.leyou.com/cart.html";
+						console.log("123")
+					})
                 }).catch(() =>{
                     //未登录保存在浏览器本地localStorage中
                     //1.查询本地购物车
