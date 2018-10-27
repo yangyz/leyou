@@ -24,7 +24,7 @@ public class RedisTest {
     @Test
     public void test(){
         BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps("test");
-        hashOperations.put("3","4");
+        hashOperations.delete("3");
         System.out.println("获取设置的绑定key值:" + hashOperations.getKey());
     }
 }

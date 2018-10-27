@@ -62,18 +62,8 @@ public class CartController {
      */
     @DeleteMapping("{skuId}")
     public ResponseEntity<Void> deleteCart(@PathVariable("skuId") String skuId){
+        System.out.println(skuId);
         this.cartService.deleteCart(skuId);
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * 本地数据库LocalStorage与redis数据库合并
-     * @param cart
-     * @return
-     */
-    @PostMapping("update")
-    public ResponseEntity<Void> updateCart(@RequestBody Cart cart){
-        this.cartService.addCart(cart);
         return ResponseEntity.ok().build();
     }
 }
