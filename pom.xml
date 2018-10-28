@@ -18,6 +18,7 @@
         <module>leyou-sms</module>
         <module>leyou-authentication</module>
         <module>leyou-cart</module>
+        <module>leyou-order</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -52,6 +53,9 @@
         <spring.security.version>5.1.0.RELEASE</spring.security.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <jwt.version>0.9.1</jwt.version>
+        <wxpay.version>0.0.3</wxpay.version>
+        <swagger.version>2.8.0</swagger.version>
+        <swagger.ui.version>2.8.0</swagger.ui.version>
     </properties>
 
     <dependencyManagement>
@@ -170,6 +174,24 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.wxpay</groupId>
+                <artifactId>wxpay-sdk</artifactId>
+                <version>${wxpay.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.ui.version}</version>
             </dependency>
 
         </dependencies>
