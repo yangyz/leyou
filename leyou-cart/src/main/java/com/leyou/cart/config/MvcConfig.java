@@ -1,10 +1,9 @@
 package com.leyou.cart.config;
 
-import com.leyou.cart.filter.CartFilter;
 import com.leyou.cart.interceptor.LoginInterceptor;
+import com.leyou.cart.properties.JwtProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

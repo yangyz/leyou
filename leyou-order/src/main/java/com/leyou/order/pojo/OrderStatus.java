@@ -121,4 +121,18 @@ public class OrderStatus {
     public void setCommentTime(Date commentTime) {
         this.commentTime = commentTime;
     }
+
+    @Override
+    public String toString() {
+        return "OrderStatus{" +
+                "orderId=" + orderId +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", paymentTime=" + paymentTime +
+                ", consignTime=" + consignTime +
+                ", endTime=" + endTime +
+                ", closeTime=" + closeTime +
+                ", commentTime=" + commentTime +
+                '}';
+    }
 }

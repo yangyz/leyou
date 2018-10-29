@@ -7,7 +7,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: 98050
@@ -27,7 +31,14 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
+        List<String> excludePath = new ArrayList<>();
+        excludePath.add("/swagger-ui.html");
+        excludePath.add("/swagger-resources/**");
+        excludePath.add("/webjars/**");
+
         registry.addInterceptor(loginInterceptor())
-                .addPathPatterns("/**");
+                .addPathPatterns("/**").excludePathPatterns(excludePath);
     }
+
 }

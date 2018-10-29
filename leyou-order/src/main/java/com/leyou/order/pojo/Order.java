@@ -326,4 +326,34 @@ public class Order {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", totalPay=" + totalPay +
+                ", actualPay=" + actualPay +
+                ", paymentType=" + paymentType +
+                ", promotionIds='" + promotionIds + '\'' +
+                ", postFee='" + postFee + '\'' +
+                ", createTime=" + createTime +
+                ", shippingName='" + shippingName + '\'' +
+                ", shippingCode='" + shippingCode + '\'' +
+                ", userId=" + userId +
+                ", buyerMessage='" + buyerMessage + '\'' +
+                ", buyerNick='" + buyerNick + '\'' +
+                ", buyerRate=" + buyerRate +
+                ", receiver='" + receiver + '\'' +
+                ", receiverMobile='" + receiverMobile + '\'' +
+                ", receiverState='" + receiverState + '\'' +
+                ", receiverCity='" + receiverCity + '\'' +
+                ", receiverDistrict='" + receiverDistrict + '\'' +
+                ", receiverAddress='" + receiverAddress + '\'' +
+                ", receiverZip='" + receiverZip + '\'' +
+                ", invoiceType=" + invoiceType +
+                ", sourceType=" + sourceType +
+                ", orderDetails=" + orderDetails +
+                ", status=" + status +
+                '}';
+    }
 }

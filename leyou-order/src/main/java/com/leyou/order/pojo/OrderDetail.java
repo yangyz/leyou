@@ -115,4 +115,18 @@ public class OrderDetail {
     public void setImage(String image) {
         this.image = image;
     }
+
+    @Override
+    public String toString() {
+        return "OrderDetail{" +
+                "id=" + id +
+                ", orderId=" + orderId +
+                ", skuId=" + skuId +
+                ", num=" + num +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                ", ownSpec='" + ownSpec + '\'' +
+                ", image='" + image + '\'' +
+                '}';
+    }
 }

@@ -1,4 +1,4 @@
-package com.leyou.cart.config;
+package com.leyou.cart.properties;
 
 import com.leyou.auth.utils.RsaUtils;
 import org.slf4j.Logger;
@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.security.PublicKey;
 
 /**

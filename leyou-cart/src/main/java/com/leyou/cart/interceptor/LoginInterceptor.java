@@ -2,7 +2,7 @@ package com.leyou.cart.interceptor;
 
 import com.leyou.auth.entity.UserInfo;
 import com.leyou.auth.utils.JwtUtils;
-import com.leyou.cart.config.JwtProperties;
+import com.leyou.cart.properties.JwtProperties;
 import com.leyou.utils.CookieUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;

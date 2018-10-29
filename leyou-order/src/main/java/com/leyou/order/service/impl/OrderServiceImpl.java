@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,14 +89,18 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Order queryOrderById(Long id) {
+        System.out.println("查询");
         //1.查询订单
         Order order = this.orderMapper.selectByPrimaryKey(id);
+        System.out.println(order);
         //2.查询订单详情
         Example example = new Example(OrderDetail.class);
         example.createCriteria().andEqualTo("orderId",id);
         List<OrderDetail> orderDetail = this.orderDetailMapper.selectByExample(example);
+        orderDetail.forEach(System.out::println);
         //3.查询订单状态
         OrderStatus orderStatus = this.orderStatusMapper.selectByPrimaryKey(order.getOrderId());
+        System.out.println(orderStatus);
         //4.order对象填充订单详情
         order.setOrderDetails(orderDetail);
         //5.order对象设置订单状态
@@ -105,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 查询当前登录用户的订单
+     * 查询当前登录用户的订单，通过订单状态进行筛选
      * @param page
      * @param rows
      * @param status
@@ -118,9 +123,13 @@ public class OrderServiceImpl implements OrderService {
             PageHelper.startPage(page,rows);
             //2.获取登录用户
             UserInfo userInfo = LoginInterceptor.getLoginUser();
+//            //3.查询
+//            Page<Order> pageInfo = (Page<Order>) this.orderMapper.queryOrderList(userInfo.getId(), status);
+//            return new PageResult<>(pageInfo.getTotal(), pageInfo.getResult());
             //3.创建查询条件
             Example example = new Example(Order.class);
             example.createCriteria().andEqualTo("userId",userInfo.getId());
+            example.setOrderByClause("create_ime DESC");
             //4.查询order
             Page<Order> pageInfo = (Page<Order>) this.orderMapper.selectByExample(example);
             //5.填充orderDetail
@@ -128,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                 //6.属性拷贝
                 Order temp = new Order();
                 BeanUtils.copyProperties(order,temp);
-                //7.查询订单详情
+                //7.根据订单号查询订单详情
                 Example example1 = new Example(OrderDetail.class);
                 example1.createCriteria().andEqualTo("orderId",order.getOrderId());
                 List<OrderDetail> orderDetailList = this.orderDetailMapper.selectByExample(example1);
@@ -139,8 +148,15 @@ public class OrderServiceImpl implements OrderService {
                 //9.返回
                 return temp;
             }).collect(Collectors.toList());
-            //10.填充分页对象
-            return new PageResult<>(pageInfo.getTotal(),orderList);
+            //10.根据订单状态进行过滤
+            List<Order> result = new ArrayList<>();
+            for (Order order : orderList){
+                if (order.getStatus().equals(status)){
+                    result.add(order);
+                }
+            }
+            //11.填充分页对象
+            return new PageResult<>(pageInfo.getTotal(),result);
         }catch (Exception e){
             logger.error("查询订单出错",e);
             return null;

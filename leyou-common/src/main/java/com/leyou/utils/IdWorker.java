@@ -28,7 +28,7 @@ public class IdWorker {
      */
     private final static long twepoch = 1288834974657L;
     /**
-     *     机器标识位数
+     *  机器标识位数
       */
     private final static long workerIdBits = 5L;
     /**

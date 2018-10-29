@@ -20,6 +20,7 @@ import javax.validation.Valid;
  * @Feature: 订单Controller
  */
 @RestController
+@RequestMapping("order")
 @Api("订单服务接口")
 public class OrderController {
 
@@ -48,9 +49,10 @@ public class OrderController {
      * @return 订单对象
      */
     @ApiOperation(value = "根据订单编号查询订单，返回订单对象",notes = "查询订单")
-    @ApiImplicitParam(name = "id",required = true,value = "订单编号")
+    @ApiImplicitParam(name = "id",required = true,value = "订单编号",type = "Long")
     @GetMapping("{id}")
     public ResponseEntity<Order> queryOrderById(@PathVariable("id") Long id){
+        System.out.println("查询订单："+id);
         Order order = this.orderService.queryOrderById(id);
         if (order == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
