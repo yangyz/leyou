@@ -206,4 +206,19 @@ public class OrderServiceImpl implements OrderService {
         return count == 1;
     }
 
+    /**
+     * 根据订单号查询商品id
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Long> querySkuIdByOrderId(Long id) {
+        Example example = new Example(OrderDetail.class);
+        example.createCriteria().andEqualTo("orderId",id);
+        List<OrderDetail> orderDetailList = this.orderDetailMapper.selectByExample(example);
+        List<Long> ids = new ArrayList<>();
+        orderDetailList.forEach(orderDetail -> ids.add(orderDetail.getSkuId()));
+        return ids;
+    }
+
 }

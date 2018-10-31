@@ -64,7 +64,7 @@ public class CartServiceImpl implements CartService {
             cart.setUserId(userInfo.getId());
             //8.其他商品信息，需要查询商品微服务
             Sku sku = this.goodsClient.querySkuById(skuId);
-            cart.setImages(StringUtils.isBlank(sku.getImages()) ? "" : StringUtils.split(sku.getImages(),",")[0]);
+            cart.setImage(StringUtils.isBlank(sku.getImages()) ? "" : StringUtils.split(sku.getImages(),",")[0]);
             cart.setPrice(sku.getPrice());
             cart.setTitle(sku.getTitle());
             cart.setOwnSpec(sku.getOwnSpec());

@@ -83,7 +83,6 @@ public class GoodsServiceImpl implements GoodsService {
         }
         //3.3 是否排序
         if (StringUtils.isNotBlank(spuQueryByPageParameter.getSortBy())){
-            System.out.println(spuQueryByPageParameter.getSortBy());
             example.setOrderByClause(spuQueryByPageParameter.getSortBy()+(spuQueryByPageParameter.getDesc()? " DESC":" ASC"));
         }
         Page<Spu> pageInfo = (Page<Spu>) this.spuMapper.selectByExample(example);

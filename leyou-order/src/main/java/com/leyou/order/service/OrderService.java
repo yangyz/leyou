@@ -3,6 +3,8 @@ package com.leyou.order.service;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.order.pojo.Order;
 
+import java.util.List;
+
 /**
  * @Author: 98050
  * @Time: 2018-10-27 16:34
@@ -39,4 +41,11 @@ public interface OrderService {
      * @return
      */
     Boolean updateOrderStatus(Long id, Integer status);
+
+    /**
+     * 根据订单号查询商品id
+     * @param id
+     * @return
+     */
+    List<Long> querySkuIdByOrderId(Long id);
 }

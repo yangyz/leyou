@@ -24,7 +24,7 @@ public class Cart {
     /**
      * 图片
      */
-    private String images;
+    private String image;
 
     /**
      * 加入购物车时的价格
@@ -65,12 +65,12 @@ public class Cart {
         this.title = title;
     }
 
-    public String getImages() {
-        return images;
+    public String getImage() {
+        return image;
     }
 
-    public void setImages(String images) {
-        this.images = images;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getPrice() {
@@ -103,7 +103,7 @@ public class Cart {
                 "userId=" + userId +
                 ", skuId=" + skuId +
                 ", title='" + title + '\'' +
-                ", images='" + images + '\'' +
+                ", image='" + image + '\'' +
                 ", price=" + price +
                 ", num=" + num +
                 ", ownSpec='" + ownSpec + '\'' +

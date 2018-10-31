@@ -5,7 +5,6 @@ import com.leyou.auth.utils.JwtUtils;
 import com.leyou.order.properties.JwtProperties;
 import com.leyou.utils.CookieUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

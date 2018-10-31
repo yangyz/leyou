@@ -62,8 +62,8 @@ public class CartController {
      */
     @DeleteMapping("{skuId}")
     public ResponseEntity<Void> deleteCart(@PathVariable("skuId") String skuId){
-        System.out.println(skuId);
         this.cartService.deleteCart(skuId);
         return ResponseEntity.ok().build();
     }
+
 }
