@@ -40,7 +40,7 @@ public class OrderDetail {
     /**
      * 商品单价
      */
-    private Long price;
+    private Double price;
 
     /**
      * 商品规格数据
@@ -92,11 +92,11 @@ public class OrderDetail {
         this.title = title;
     }
 
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
