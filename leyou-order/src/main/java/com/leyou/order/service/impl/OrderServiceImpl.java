@@ -94,7 +94,6 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("查询");
         //1.查询订单
         Order order = this.orderMapper.selectByPrimaryKey(id);
-        System.out.println(order);
         //2.查询订单详情
         Example example = new Example(OrderDetail.class);
         example.createCriteria().andEqualTo("orderId",id);
@@ -102,7 +101,6 @@ public class OrderServiceImpl implements OrderService {
         orderDetail.forEach(System.out::println);
         //3.查询订单状态
         OrderStatus orderStatus = this.orderStatusMapper.selectByPrimaryKey(order.getOrderId());
-        System.out.println(orderStatus);
         //4.order对象填充订单详情
         order.setOrderDetails(orderDetail);
         //5.order对象设置订单状态
@@ -196,6 +194,16 @@ public class OrderServiceImpl implements OrderService {
         List<Long> ids = new ArrayList<>();
         orderDetailList.forEach(orderDetail -> ids.add(orderDetail.getSkuId()));
         return ids;
+    }
+
+    /**
+     * 根据订单号查询订单状态
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderStatus queryOrderStatusById(Long id) {
+        return this.orderStatusMapper.selectByPrimaryKey(id);
     }
 
 }

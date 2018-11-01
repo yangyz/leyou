@@ -26,12 +26,12 @@ public class Order {
      * 总金额
      */
     @NotNull
-    private Long totalPay;
+    private Double totalPay;
     /**
      * 实付金额
      */
     @NotNull
-    private Long actualPay;
+    private Double actualPay;
 
     /**
      * 支付类型，1、在线支付，2、货到付款
@@ -143,19 +143,19 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Long getTotalPay() {
+    public Double getTotalPay() {
         return totalPay;
     }
 
-    public void setTotalPay(Long totalPay) {
+    public void setTotalPay(Double totalPay) {
         this.totalPay = totalPay;
     }
 
-    public Long getActualPay() {
+    public Double getActualPay() {
         return actualPay;
     }
 
-    public void setActualPay(Long actualPay) {
+    public void setActualPay(Double actualPay) {
         this.actualPay = actualPay;
     }
 

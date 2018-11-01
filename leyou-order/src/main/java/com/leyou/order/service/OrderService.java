@@ -2,6 +2,7 @@ package com.leyou.order.service;
 
 import com.leyou.common.pojo.PageResult;
 import com.leyou.order.pojo.Order;
+import com.leyou.order.pojo.OrderStatus;
 
 import java.util.List;
 
@@ -48,4 +49,11 @@ public interface OrderService {
      * @return
      */
     List<Long> querySkuIdByOrderId(Long id);
+
+    /**
+     * 根据订单号查询订单状态
+     * @param id
+     * @return
+     */
+    OrderStatus queryOrderStatusById(Long id);
 }

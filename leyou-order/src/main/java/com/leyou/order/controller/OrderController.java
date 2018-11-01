@@ -2,6 +2,8 @@ package com.leyou.order.controller;
 
 import com.leyou.common.pojo.PageResult;
 import com.leyou.order.pojo.Order;
+import com.leyou.order.pojo.OrderDetail;
+import com.leyou.order.pojo.OrderStatus;
 import com.leyou.order.service.OrderService;
 import com.leyou.order.utils.PayHelper;
 import com.leyou.order.utils.PayState;
@@ -189,5 +191,27 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(longList);
+    }
+
+
+    /**
+     * 根据订单id查询订单状态
+     * @param id
+     * @return
+     */
+    @GetMapping("status/{id}")
+    @ApiOperation(value = "根据订单号查询订单状态",notes = "查询订单状态")
+    @ApiImplicitParam(name = "id",value = "订单编号",type = "Long")
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "订单状态"),
+            @ApiResponse(code = 404,message = "没有找到对应的订单状态"),
+            @ApiResponse(code = 500,message = "服务器异常")
+    })
+    public ResponseEntity<OrderStatus> queryOrderStatusById(@PathVariable("id") Long id){
+        OrderStatus orderStatus = this.orderService.queryOrderStatusById(id);
+        if (orderStatus == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(orderStatus);
     }
 }
