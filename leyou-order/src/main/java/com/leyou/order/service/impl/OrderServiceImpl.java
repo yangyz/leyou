@@ -125,40 +125,17 @@ public class OrderServiceImpl implements OrderService {
             PageHelper.startPage(page,rows);
             //2.获取登录用户
             UserInfo userInfo = LoginInterceptor.getLoginUser();
-//            //3.查询
-//            Page<Order> pageInfo = (Page<Order>) this.orderMapper.queryOrderList(userInfo.getId(), status);
-//            return new PageResult<>(pageInfo.getTotal(), pageInfo.getResult());
-            //3.创建查询条件
-            Example example = new Example(Order.class);
-            example.createCriteria().andEqualTo("userId",userInfo.getId());
-            example.setOrderByClause("create_ime DESC");
-            //4.查询order
-            Page<Order> pageInfo = (Page<Order>) this.orderMapper.selectByExample(example);
-            //5.填充orderDetail
-            List<Order> orderList = pageInfo.getResult().stream().map(order -> {
-                //6.属性拷贝
-                Order temp = new Order();
-                BeanUtils.copyProperties(order,temp);
-                //7.根据订单号查询订单详情
-                Example example1 = new Example(OrderDetail.class);
-                example1.createCriteria().andEqualTo("orderId",order.getOrderId());
-                List<OrderDetail> orderDetailList = this.orderDetailMapper.selectByExample(example1);
-                temp.setOrderDetails(orderDetailList);
-                //8.查询订单状态
-                OrderStatus orderStatus = this.orderStatusMapper.selectByPrimaryKey(order.getOrderId());
-                temp.setStatus(orderStatus.getStatus());
-                //9.返回
-                return temp;
-            }).collect(Collectors.toList());
-            //10.根据订单状态进行过滤
-            List<Order> result = new ArrayList<>();
-            for (Order order : orderList){
-                if (order.getStatus().equals(status)){
-                    result.add(order);
-                }
-            }
-            //11.填充分页对象
-            return new PageResult<>(pageInfo.getTotal(),result);
+            //3.查询
+            Page<Order> pageInfo = (Page<Order>) this.orderMapper.queryOrderList(userInfo.getId(), status);
+            //4.填充orderDetail
+            List<Order> orderList = pageInfo.getResult();
+            orderList.forEach(order -> {
+                Example example = new Example(OrderDetail.class);
+                example.createCriteria().andEqualTo("orderId",order.getOrderId());
+                List<OrderDetail> orderDetailList = this.orderDetailMapper.selectByExample(example);
+                order.setOrderDetails(orderDetailList);
+            });
+            return new PageResult<>(pageInfo.getTotal(),(long)pageInfo.getPages(), orderList);
         }catch (Exception e){
             logger.error("查询订单出错",e);
             return null;

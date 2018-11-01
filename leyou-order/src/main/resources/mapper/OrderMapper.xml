@@ -4,16 +4,11 @@
 <mapper namespace="com.leyou.order.mapper.OrderMapper">
     <resultMap id="OrderWithDetail" type="com.leyou.order.pojo.Order" autoMapping="true">
         <id column="order_id" property="orderId"></id>
-        <collection property="orderDetails" javaType="List" ofType="com.leyou.order.pojo.OrderDetail" autoMapping="true">
-            <id column="id" property="id"></id>
-        </collection>
     </resultMap>
     <select id="queryOrderList" resultMap="OrderWithDetail">
-        SELECT o.order_id,o.actual_pay, o.total_pay,o.create_time, os.status, od.sku_id,
-        od.title ,od.image, od.num , od.own_spec, od.price
+        SELECT o.order_id,o.actual_pay, o.total_pay,o.create_time, os.status
         FROM tb_order o
         LEFT JOIN tb_order_status os ON os.order_id = o.order_id
-        LEFT JOIN tb_order_detail od ON od.order_id = o.order_id
         WHERE o.user_id = #{userId}
         <if test="status != null and status != 0">
             AND os.status = #{status}
