@@ -57,7 +57,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         //3.有token，查询用户信息
         try{
             //4.解析成功，说明已经登录
-            UserInfo userInfo = JwtUtils.getInfoFromToken(token,jwtProperties.getPublicKey());
+            UserInfo userInfo;
+            userInfo = JwtUtils.getInfoFromToken(token,jwtProperties.getPublicKey());
             //5.放入线程域
             t1.set(userInfo);
             return true;

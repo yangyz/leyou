@@ -1,6 +1,7 @@
 package com.leyou.item.service;
 
 import com.leyou.item.pojo.Category;
+import com.leyou.myexception.MyException;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface CategoryService {
      * @param pid
      * @return
      */
-    List<Category> queryCategoryByPid(Long pid);
+    List<Category> queryCategoryByPid(Long pid) throws MyException;
 
     /**
      * 根据brand id查询分类信息

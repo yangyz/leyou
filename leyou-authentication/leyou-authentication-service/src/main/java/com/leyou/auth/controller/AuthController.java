@@ -54,7 +54,6 @@ public class AuthController {
         if (StringUtils.isBlank(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        System.out.println(token);
         //2.将token写入cookie，并指定httpOnly为true，防止通过js获取和修改
         CookieUtils.setCookie(request,response,properties.getCookieName(),token,properties.getCookieMaxAge(),true);
 

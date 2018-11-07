@@ -3,11 +3,15 @@ package com.leyou.item.service.impl;
 import com.leyou.item.pojo.Category;
 import com.leyou.item.mapper.CategoryMapper;
 import com.leyou.item.service.CategoryService;
+import com.leyou.myexception.LyException;
+import com.leyou.myexception.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,10 +32,14 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      */
     @Override
-    public List<Category> queryCategoryByPid(Long pid) {
-        Category t=new Category();
-        t.setParentId(pid);
-        return this.categoryMapper.select(t);
+    public List<Category> queryCategoryByPid(Long pid) throws MyException {
+        Example example = new Example(Category.class);
+        example.createCriteria().andEqualTo("parentId",pid);
+        List<Category> list = this.categoryMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(list)){
+            throw new MyException(LyException.CATEGORY_NOT_FOUND);
+        }
+        return list;
     }
 
     /**
@@ -50,7 +58,6 @@ public class CategoryServiceImpl implements CategoryService {
          * 将本节点插入到数据库中
          * 将此category的父节点的isParent设为true
          */
-
 
         //1.首先置id为null
         category.setId(null);
