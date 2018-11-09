@@ -23,8 +23,7 @@ public class RedisTest {
 
     @Test
     public void test(){
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps("test");
-        hashOperations.delete("3");
-        System.out.println("获取设置的绑定key值:" + hashOperations.getKey());
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps("leyou:goods:detail");
+        hashOperations.put("1","22222222");
     }
 }

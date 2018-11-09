@@ -95,4 +95,15 @@ public class SearchRequest {
     public void setDescending(Boolean descending) {
         this.descending = descending;
     }
+
+    @Override
+    public String toString() {
+        return "SearchRequest{" +
+                "key='" + key + '\'' +
+                ", page=" + page +
+                ", sortBy='" + sortBy + '\'' +
+                ", descending=" + descending +
+                ", filter=" + filter +
+                '}';
+    }
 }
