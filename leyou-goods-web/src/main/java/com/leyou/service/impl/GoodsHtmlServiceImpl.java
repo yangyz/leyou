@@ -36,7 +36,6 @@ public class GoodsHtmlServiceImpl implements GoodsHtmlService {
 
     @Override
     public void createHtml(Long spuId) {
-        System.out.println("静态化："+spuId);
         PrintWriter writer = null;
 
         //获取页面数据
@@ -50,7 +49,6 @@ public class GoodsHtmlServiceImpl implements GoodsHtmlService {
         File file = new File("D:\\nginx-1.12.2\\html\\item\\"+spuId+".html");
         try {
             writer = new PrintWriter(file);
-
             //执行页面静态化方法
             templateEngine.process("item",context,writer);
         } catch (FileNotFoundException e) {

@@ -38,4 +38,12 @@ public interface UserService {
      * @return
      */
     User queryUser(String username, String password);
+
+    /**
+     * 根据用户名修改密码
+     * @param username
+     * @param newPassword
+     * @return
+     */
+    boolean updatePassword(String username,String oldPassword,String newPassword);
 }

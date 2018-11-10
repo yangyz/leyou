@@ -1,8 +1,8 @@
 server:
-  port: 8083
+  port: 8090
 spring:
   application:
-    name: search-service
+    name: secskill-service
   data:
     elasticsearch:
       cluster-name: elasticsearch

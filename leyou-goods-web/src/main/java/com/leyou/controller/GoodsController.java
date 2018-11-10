@@ -42,7 +42,7 @@ public class GoodsController {
     @Autowired
     private ThymeleafViewResolver thymeleafViewResolver;
 
-    private static String KEY_PREFIX = "leyou:goods:detail";
+    private static String KEY_PREFIX = "leyou:goods:detail:";
 
     @GetMapping(value = "{id}.html",produces = "text/html")
     @ResponseBody
@@ -55,7 +55,7 @@ public class GoodsController {
         //页面静态化
 //        this.goodsHtmlService.asyncExecute(idN);
 //        return "item";
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX+id);
         String html = (String) hashOperations.get(id);
         /**
          * 先取缓存
@@ -67,12 +67,11 @@ public class GoodsController {
         //手动渲染模板
         WebContext context = new WebContext(request,response,request.getServletContext(),request.getLocale(),model.asMap());
         html = thymeleafViewResolver.getTemplateEngine().process("item",context);
-        System.out.println(html);
         if (StringUtils.isNotEmpty(html)){
             //不空，放入缓存
             //设置有效期60秒
-            hashOperations.expire(60, TimeUnit.SECONDS);
             hashOperations.put(id,html);
+            hashOperations.expire(60, TimeUnit.SECONDS);
         }
         return html;
     }

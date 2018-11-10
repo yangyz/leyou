@@ -10,13 +10,13 @@
         <module name="leyou-authentication-common" />
         <module name="leyou-authentication-service" />
         <module name="leyou-cart" />
-        <module name="leyou-common" />
         <module name="leyou-goods-web" />
         <module name="leyou-item-interface" />
         <module name="leyou-item-service" />
         <module name="leyou-order" />
         <module name="leyou-registry" />
         <module name="leyou-search" />
+        <module name="leyou-secskill" />
         <module name="leyou-sms" />
         <module name="leyou-upload" />
         <module name="leyou-user-interface" />

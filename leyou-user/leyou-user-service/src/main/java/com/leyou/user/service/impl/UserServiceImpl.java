@@ -4,11 +4,13 @@ import com.leyou.user.mapper.UserMapper;
 import com.leyou.user.pojo.User;
 import com.leyou.user.service.UserService;
 import com.leyou.utils.CodecUtils;
+import com.leyou.utils.JsonUtils;
 import com.leyou.utils.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private StringRedisTemplate stringRedisTemplate;
 
     private static final String KEY_PREFIX = "user:code:phone";
+
+    private static final String KEY_PREFIX2 = "user:info:";
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -118,10 +122,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User queryUser(String username, String password) {
-        //1.查询
-        User record = new User();
-        record.setUsername(username);
-        User user = this.userMapper.selectOne(record);
+        /**
+         * 逻辑改变，先去缓存中查询用户数据，查到的话直接返回，查不到再去数据库中查询，然后放入到缓存当中
+         */
+        //1.缓存中查询
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX+username);
+        String userStr = (String) hashOperations.get(username);
+        User user =  JsonUtils.parse(userStr,User.class);
+        if (user == null){
+            //在缓存中没有查到，去数据库查,查到放入缓存当中
+            User record = new User();
+            record.setUsername(username);
+            user = this.userMapper.selectOne(record);
+            hashOperations.put(user.getUsername(), JsonUtils.serialize(user));
+        }
 
         //2.校验用户名
         if (user == null){
@@ -135,5 +149,35 @@ public class UserServiceImpl implements UserService {
 
         //4.用户名密码都正确
         return user;
+    }
+
+    /**
+     * 根据用户名修改密码
+     * @param username
+     * @param newPassword
+     * @return
+     */
+    @Override
+    public boolean updatePassword(String username,String oldPassword, String newPassword) {
+        /**
+         * 这里面涉及到对缓存的操作：
+         * 先把数据存到数据库中，成功后，再让缓存失效。
+         */
+        //1.读取用户信息
+        User user = this.queryUser(username,oldPassword);
+        if (user == null){
+            return false;
+        }
+        //2.更新数据库中的用户信息
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        //2.1密码加密
+        String encodePassword = CodecUtils.passwordBcryptEncode(username.trim(),newPassword.trim());
+        updateUser.setPassword(encodePassword);
+        this.userMapper.updateByPrimaryKeySelective(updateUser);
+        //3.处理缓存中的信息
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX+username);
+        hashOperations.delete(username);
+        return true;
     }
 }
