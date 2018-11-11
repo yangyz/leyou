@@ -13,7 +13,8 @@
         <module name="leyou-goods-web" />
         <module name="leyou-item-interface" />
         <module name="leyou-item-service" />
-        <module name="leyou-order" />
+        <module name="leyou-order-interface" />
+        <module name="leyou-order-service" />
         <module name="leyou-registry" />
         <module name="leyou-search" />
         <module name="leyou-secskill" />

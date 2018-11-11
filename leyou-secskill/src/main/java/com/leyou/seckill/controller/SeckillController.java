@@ -54,6 +54,7 @@ public class SeckillController {
     @GetMapping("seckill/{orderId}")
     public ResponseEntity<Long> seckillOrder(@PathVariable("orderId") Long orderId){
         //1.判断用户是否登录
+
         //2.判断库存
         //3.判断是否秒杀成
         //4.秒杀成功的话就下订单，减库存
