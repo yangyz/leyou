@@ -56,4 +56,11 @@ public interface OrderService {
      * @return
      */
     OrderStatus queryOrderStatusById(Long id);
+
+    /**
+     * 查询库存
+     * @param order
+     * @return
+     */
+    List<Long> queryStock(Order order);
 }

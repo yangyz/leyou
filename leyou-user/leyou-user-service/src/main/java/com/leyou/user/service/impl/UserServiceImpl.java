@@ -6,6 +6,7 @@ import com.leyou.user.service.UserService;
 import com.leyou.utils.CodecUtils;
 import com.leyou.utils.JsonUtils;
 import com.leyou.utils.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -126,16 +127,19 @@ public class UserServiceImpl implements UserService {
          * 逻辑改变，先去缓存中查询用户数据，查到的话直接返回，查不到再去数据库中查询，然后放入到缓存当中
          */
         //1.缓存中查询
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX+username);
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX2+username);
         String userStr = (String) hashOperations.get(username);
-        User user =  JsonUtils.parse(userStr,User.class);
-        if (user == null){
+        User user;
+        if (StringUtils.isEmpty(userStr)){
             //在缓存中没有查到，去数据库查,查到放入缓存当中
             User record = new User();
             record.setUsername(username);
             user = this.userMapper.selectOne(record);
             hashOperations.put(user.getUsername(), JsonUtils.serialize(user));
+        } else {
+            user =  JsonUtils.parse(userStr,User.class);
         }
+
 
         //2.校验用户名
         if (user == null){

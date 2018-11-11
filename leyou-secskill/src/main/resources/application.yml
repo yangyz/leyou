@@ -2,11 +2,18 @@ server:
   port: 8090
 spring:
   application:
-    name: secskill-service
+    name: seckill-service
   data:
     elasticsearch:
       cluster-name: elasticsearch
       cluster-nodes: 192.168.19.121:9300
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/leyou?characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
   rabbitmq:
     virtual-host: /leyou
     username: /leyou

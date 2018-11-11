@@ -1,9 +1,6 @@
 package com.leyou.seckill.vo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -11,21 +8,51 @@ import java.util.Date;
  * @Time: 2018-11-10 11:48
  * @Feature: 秒杀商品对象
  */
+@Table(name = "tb_seckill_spu")
 public class SeckillGoods {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long spuId;
+    /**
+     * 秒杀商品的id
+     */
+    private Long skuId;
+    /**
+     * 秒杀开始时间
+     */
     private Date startTime;
+    /**
+     * 秒杀结束时间
+     */
     private Date endTime;
+    /**
+     * 秒杀价格
+     */
     private Double seckillPrice;
+    /**
+     * 商品标题
+     */
     private String title;
-    private String subTitle;
+
+    /**
+     * 商品图片
+     */
     private String image;
 
+    /**
+     * 是否可以秒杀
+     */
+    private Boolean enable;
+
+    /**
+     * 秒杀库存
+     */
     @Transient
     private Integer stock;
+
+    @Transient
+    private Integer seckillTotal;
 
     public Long getId() {
         return id;
@@ -35,12 +62,12 @@ public class SeckillGoods {
         this.id = id;
     }
 
-    public Long getSpuId() {
-        return spuId;
+    public Long getSkuId() {
+        return skuId;
     }
 
-    public void setSpuId(Long spuId) {
-        this.spuId = spuId;
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     public Date getStartTime() {
@@ -75,14 +102,6 @@ public class SeckillGoods {
         this.title = title;
     }
 
-    public String getSubTitle() {
-        return subTitle;
-    }
-
-    public void setSubTitle(String subTitle) {
-        this.subTitle = subTitle;
-    }
-
     public String getImage() {
         return image;
     }
@@ -97,5 +116,21 @@ public class SeckillGoods {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Integer getSeckillTotal() {
+        return seckillTotal;
+    }
+
+    public void setSeckillTotal(Integer seckillTotal) {
+        this.seckillTotal = seckillTotal;
+    }
+
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
     }
 }

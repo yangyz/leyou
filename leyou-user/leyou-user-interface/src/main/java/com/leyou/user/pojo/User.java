@@ -31,7 +31,7 @@ public class User {
     /**
      * 密码
      */
-    @JsonIgnore
+    //@JsonIgnore
     @Length(min = 6,max = 25,message = "密码只能在6~25位之间")
     private String password;
 

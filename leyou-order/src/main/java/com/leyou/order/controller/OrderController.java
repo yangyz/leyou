@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,10 +42,18 @@ public class OrderController {
     @PostMapping
     @ApiOperation(value = "创建订单接口，返回订单编号",notes = "创建订单")
     @ApiImplicitParam(name = "order",required = true,value = "订单的json对象，包含订单条目和物流信息")
-    public ResponseEntity<Long> createOrder(@RequestBody @Valid Order order){
+    public ResponseEntity<List<Long>> createOrder(@RequestBody @Valid Order order){
+
+        List<Long> skuId = this.orderService.queryStock(order);
+        if (skuId != null && skuId.size() != 0){
+            //库存不足
+            return new ResponseEntity<>(skuId,HttpStatus.OK);
+        }
+
         Long id = this.orderService.createOrder(order);
-        return new ResponseEntity<>(id, HttpStatus.CREATED);
+        return new ResponseEntity<>(Arrays.asList(id), HttpStatus.CREATED);
     }
+
 
     /**
      * 查询订单

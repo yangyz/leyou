@@ -4,10 +4,12 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.leyou.auth.entity.UserInfo;
 import com.leyou.common.pojo.PageResult;
+import com.leyou.item.pojo.Stock;
 import com.leyou.order.interceptor.LoginInterceptor;
 import com.leyou.order.mapper.OrderDetailMapper;
 import com.leyou.order.mapper.OrderMapper;
 import com.leyou.order.mapper.OrderStatusMapper;
+import com.leyou.order.mapper.StockMapper;
 import com.leyou.order.pojo.Order;
 import com.leyou.order.pojo.OrderDetail;
 import com.leyou.order.pojo.OrderStatus;
@@ -48,11 +50,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
 
+    @Autowired
+    private StockMapper stockMapper;
+
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Long createOrder(Order order) {
+
         //1.生成orderId
         long orderId = idWorker.nextId();
         //2.获取登录的用户
@@ -76,9 +82,19 @@ public class OrderServiceImpl implements OrderService {
         this.orderStatusMapper.insertSelective(orderStatus);
 
         //7.在订单详情中添加orderId
-        order.getOrderDetails().forEach(orderDetail -> orderDetail.setOrderId(orderId));
+        order.getOrderDetails().forEach(orderDetail ->{
+            //添加订单
+            orderDetail.setOrderId(orderId);
+
+        });
         //8.保存订单详情，使用批量插入功能
         this.orderDetailMapper.insertList(order.getOrderDetails());
+
+        //9.更新库存
+        order.getOrderDetails().forEach(orderDetail -> {
+            this.stockMapper.reduceStock(orderDetail.getSkuId(),orderDetail.getNum());
+        });
+
 
         logger.debug("生成订单，订单编号：{}，用户id：{}", orderId, userInfo.getId());
         return orderId;
@@ -91,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Order queryOrderById(Long id) {
-        System.out.println("查询");
         //1.查询订单
         Order order = this.orderMapper.selectByPrimaryKey(id);
         //2.查询订单详情
@@ -204,6 +219,24 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderStatus queryOrderStatusById(Long id) {
         return this.orderStatusMapper.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 查询订单下商品的库存，返回库存不足的商品Id
+     * @param order
+     * @return
+     */
+    @Override
+    public List<Long> queryStock(Order order) {
+        List<Long> skuId = new ArrayList<>();
+        order.getOrderDetails().forEach(orderDetail -> {
+            Stock stock = this.stockMapper.selectByPrimaryKey(orderDetail.getSkuId());
+            if (stock.getStock() - orderDetail.getNum() < 0){
+                //库存不足
+                skuId.add(orderDetail.getSkuId());
+            }
+        });
+        return skuId;
     }
 
 }
