@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Date;
 
 /**
  * @Author: 98050
@@ -50,5 +51,10 @@ public class JwtTest {
         UserInfo user = JwtUtils.getInfoFromToken(token, publicKey);
         System.out.println("id: " + user.getId());
         System.out.println("userName: " + user.getUsername());
+    }
+
+    @Test
+    public void date(){
+        System.out.println(new Date());
     }
 }

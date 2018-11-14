@@ -59,5 +59,19 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!--订单微服务-->
+        <dependency>
+            <groupId>com.leyou.order</groupId>
+            <artifactId>leyou-order-interface</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leyou.service</groupId>
+            <artifactId>leyou-item-service</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 </project>

@@ -1,5 +1,6 @@
 package com.leyou.seckill.controller;
 
+
 import com.leyou.seckill.service.SeckillService;
 import com.leyou.seckill.vo.SeckillGoods;
 import com.leyou.seckill.vo.SeckillParameter;
@@ -23,7 +24,7 @@ public class SeckillController {
     private SeckillService seckillService;
 
     /**
-     * 添加秒杀商品
+     * 添加秒杀商品(后台)
      * @param seckillParameter
      * @return
      */
@@ -44,21 +45,21 @@ public class SeckillController {
     @GetMapping("list")
     public ResponseEntity<List<SeckillGoods>> querySeckillGoods(){
         List<SeckillGoods> list = this.seckillService.querySeckillGoods();
-        if (list!=null || list.size() < 0){
+        if (list == null || list.size() < 0){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(list);
     }
 
 
-    @GetMapping("seckill/{orderId}")
-    public ResponseEntity<Long> seckillOrder(@PathVariable("orderId") Long orderId){
-        //1.判断用户是否登录
-
-        //2.判断库存
-        //3.判断是否秒杀成
-        //4.秒杀成功的话就下订单，减库存
-        return null;
-
+    @PostMapping("seck")
+    public ResponseEntity<Long> seckillOrder(@RequestBody SeckillGoods seckillGoods){
+        //1.创建订单
+        Long id = this.seckillService.createOrder(seckillGoods);
+        //2.判断秒杀是否成功
+        if (id == null){
+           return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        }
+        return ResponseEntity.ok(id);
     }
 }

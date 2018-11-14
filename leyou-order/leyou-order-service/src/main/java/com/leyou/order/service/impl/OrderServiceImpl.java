@@ -16,6 +16,7 @@ import com.leyou.order.pojo.OrderStatus;
 import com.leyou.order.service.OrderService;
 import com.leyou.utils.IdWorker;
 import com.leyou.utils.JsonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -57,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Long createOrder(Order order) {
+    public Long createOrder(String tag,Order order) {
 
         //1.生成orderId
         long orderId = idWorker.nextId();
@@ -91,9 +92,13 @@ public class OrderServiceImpl implements OrderService {
         this.orderDetailMapper.insertList(order.getOrderDetails());
 
         //9.更新库存
-        order.getOrderDetails().forEach(orderDetail -> {
-            this.stockMapper.reduceStock(orderDetail.getSkuId(),orderDetail.getNum());
-        });
+        order.getOrderDetails().forEach(orderDetail -> this.stockMapper.reduceStock(orderDetail.getSkuId(),orderDetail.getNum()));
+
+        //10.如果是秒杀订单，那么修改秒杀商品库存
+        String seck = "seckill";
+        if (StringUtils.isNotEmpty(tag) && tag.equals(seck)){
+            order.getOrderDetails().forEach(orderDetail -> this.stockMapper.reduceSeckStock(orderDetail.getSkuId(),orderDetail.getNum()));
+        }
 
 
         logger.debug("生成订单，订单编号：{}，用户id：{}", orderId, userInfo.getId());
@@ -227,13 +232,22 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public List<Long> queryStock(Order order) {
+    public List<Long> queryStock(String tag,Order order) {
+        String seck = "seckill";
         List<Long> skuId = new ArrayList<>();
         order.getOrderDetails().forEach(orderDetail -> {
             Stock stock = this.stockMapper.selectByPrimaryKey(orderDetail.getSkuId());
             if (stock.getStock() - orderDetail.getNum() < 0){
-                //库存不足
+                //先判断库存是否充足
                 skuId.add(orderDetail.getSkuId());
+            }else{
+                //充足的话就判断秒杀库存是否充足
+                if (StringUtils.isNotEmpty(tag) && seck.equals(tag)){
+                    //检查秒杀库存
+                    if (stock.getSeckillStock() - orderDetail.getNum() < 0){
+                        skuId.add(orderDetail.getSkuId());
+                    }
+                }
             }
         });
         return skuId;

@@ -14,10 +14,11 @@ import java.util.List;
 public interface OrderService {
     /**
      * 订单创建
+     * @param tag
      * @param order
      * @return
      */
-    Long createOrder(Order order);
+    Long createOrder(String tag,Order order);
 
     /**
      * 根据订单号查询订单
@@ -59,8 +60,9 @@ public interface OrderService {
 
     /**
      * 查询库存
+     * @param tag
      * @param order
      * @return
      */
-    List<Long> queryStock(Order order);
+    List<Long> queryStock(String tag,Order order);
 }

@@ -21,4 +21,11 @@ public interface StockMapper extends Mapper<Stock> {
     @Update("update tb_stock set stock = stock - #{num} where sku_id = #{skuId} and stock > 0")
     void reduceStock(@Param("skuId") Long skuId, @Param("num") Integer num);
 
+    /**
+     * 更新对应商品的秒杀库存,且库存必须大于0，否则回滚。
+     * @param skuId
+     * @param num
+     */
+    @Update("update tb_stock set seckill_stock = seckill_stock - #{num} where sku_id = #{skuId} and seckill_stock > 0")
+    void reduceSeckStock(@Param("skuId")Long skuId, @Param("num")Integer num);
 }

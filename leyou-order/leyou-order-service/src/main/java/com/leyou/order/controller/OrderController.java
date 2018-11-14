@@ -41,16 +41,19 @@ public class OrderController {
      */
     @PostMapping
     @ApiOperation(value = "创建订单接口，返回订单编号",notes = "创建订单")
-    @ApiImplicitParam(name = "order",required = true,value = "订单的json对象，包含订单条目和物流信息")
-    public ResponseEntity<List<Long>> createOrder(@RequestBody @Valid Order order){
-
-        List<Long> skuId = this.orderService.queryStock(order);
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "order",required = true,value = "订单的json对象，包含订单条目和物流信息"),
+            @ApiImplicitParam(name = "tag",required = true,value = "是否是秒杀订单")
+    })
+    public ResponseEntity<List<Long>> createOrder(@RequestParam("seck") String seck,@RequestBody @Valid Order order){
+        System.out.println(seck);
+        List<Long> skuId = this.orderService.queryStock(seck,order);
         if (skuId != null && skuId.size() != 0){
             //库存不足
             return new ResponseEntity<>(skuId,HttpStatus.OK);
         }
 
-        Long id = this.orderService.createOrder(order);
+        Long id = this.orderService.createOrder(seck,order);
         return new ResponseEntity<>(Arrays.asList(id), HttpStatus.CREATED);
     }
 

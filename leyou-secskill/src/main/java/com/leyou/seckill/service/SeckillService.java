@@ -22,4 +22,11 @@ public interface SeckillService {
      * @return
      */
     List<SeckillGoods> querySeckillGoods();
+
+    /**
+     * 创建订单
+     * @param seckillGoods
+     * @return
+     */
+    Long createOrder(SeckillGoods seckillGoods);
 }

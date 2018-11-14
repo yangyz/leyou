@@ -8,7 +8,7 @@ import java.util.Date;
  * @Time: 2018-11-10 11:48
  * @Feature: 秒杀商品对象
  */
-@Table(name = "tb_seckill_spu")
+@Table(name = "tb_seckill_sku")
 public class SeckillGoods {
 
     @Id
