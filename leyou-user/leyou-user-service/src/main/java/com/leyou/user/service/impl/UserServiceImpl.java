@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     private static final String KEY_PREFIX = "user:code:phone";
 
-    private static final String KEY_PREFIX2 = "user:info:";
+    private static final String KEY_PREFIX2 = "leyou:user:info";
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
          * 逻辑改变，先去缓存中查询用户数据，查到的话直接返回，查不到再去数据库中查询，然后放入到缓存当中
          */
         //1.缓存中查询
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX2+username);
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX2);
         String userStr = (String) hashOperations.get(username);
         User user;
         if (StringUtils.isEmpty(userStr)){

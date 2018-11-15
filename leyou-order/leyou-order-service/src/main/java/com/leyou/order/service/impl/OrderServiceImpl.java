@@ -6,13 +6,11 @@ import com.leyou.auth.entity.UserInfo;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.pojo.Stock;
 import com.leyou.order.interceptor.LoginInterceptor;
-import com.leyou.order.mapper.OrderDetailMapper;
-import com.leyou.order.mapper.OrderMapper;
-import com.leyou.order.mapper.OrderStatusMapper;
-import com.leyou.order.mapper.StockMapper;
+import com.leyou.order.mapper.*;
 import com.leyou.order.pojo.Order;
 import com.leyou.order.pojo.OrderDetail;
 import com.leyou.order.pojo.OrderStatus;
+import com.leyou.order.pojo.SeckillOrder;
 import com.leyou.order.service.OrderService;
 import com.leyou.utils.IdWorker;
 import com.leyou.utils.JsonUtils;
@@ -54,55 +52,83 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private StockMapper stockMapper;
 
+    @Autowired
+    private SeckillOrderMapper seckillOrderMapper;
+
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Long createOrder(String tag,Order order) {
-
-        //1.生成orderId
-        long orderId = idWorker.nextId();
-        //2.获取登录的用户
-        UserInfo userInfo = LoginInterceptor.getLoginUser();
-        //3.初始化数据
-        order.setBuyerNick(userInfo.getUsername());
-        order.setBuyerRate(false);
-        order.setCreateTime(new Date());
-        order.setOrderId(orderId);
-        order.setUserId(userInfo.getId());
-        //4.保存数据
-        this.orderMapper.insertSelective(order);
-
-        //5.保存订单状态
-        OrderStatus orderStatus = new OrderStatus();
-        orderStatus.setOrderId(orderId);
-        orderStatus.setCreateTime(order.getCreateTime());
-        //初始状态未未付款：1
-        orderStatus.setStatus(1);
-        //6.保存数据
-        this.orderStatusMapper.insertSelective(orderStatus);
-
-        //7.在订单详情中添加orderId
-        order.getOrderDetails().forEach(orderDetail ->{
-            //添加订单
-            orderDetail.setOrderId(orderId);
-
-        });
-        //8.保存订单详情，使用批量插入功能
-        this.orderDetailMapper.insertList(order.getOrderDetails());
-
-        //9.更新库存
-        order.getOrderDetails().forEach(orderDetail -> this.stockMapper.reduceStock(orderDetail.getSkuId(),orderDetail.getNum()));
-
-        //10.如果是秒杀订单，那么修改秒杀商品库存
         String seck = "seckill";
-        if (StringUtils.isNotEmpty(tag) && tag.equals(seck)){
-            order.getOrderDetails().forEach(orderDetail -> this.stockMapper.reduceSeckStock(orderDetail.getSkuId(),orderDetail.getNum()));
+        boolean create = true;
+        //1.先判断订单中的商品库存是否充足
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            Stock stock = this.stockMapper.selectByPrimaryKey(orderDetail.getSkuId());
+            if (stock.getStock() - orderDetail.getNum() < 0) {
+                create = false;
+            } else if (tag.equals(seck) && stock.getSeckillStock() - orderDetail.getNum() < 0) {
+                create = false;
+            }
+        }
+        if (create) {
+            //创建订单
+            //1.生成orderId
+            long orderId = idWorker.nextId();
+            //2.获取登录的用户
+            UserInfo userInfo = LoginInterceptor.getLoginUser();
+            //3.初始化数据
+            order.setBuyerNick(userInfo.getUsername());
+            order.setBuyerRate(false);
+            order.setCreateTime(new Date());
+            order.setOrderId(orderId);
+            order.setUserId(userInfo.getId());
+            //4.保存数据
+            this.orderMapper.insertSelective(order);
+
+            //5.保存订单状态
+            OrderStatus orderStatus = new OrderStatus();
+            orderStatus.setOrderId(orderId);
+            orderStatus.setCreateTime(order.getCreateTime());
+            //初始状态未未付款：1
+            orderStatus.setStatus(1);
+            //6.保存数据
+            this.orderStatusMapper.insertSelective(orderStatus);
+
+            //7.在订单详情中添加orderId
+            order.getOrderDetails().forEach(orderDetail -> {
+                //添加订单
+                orderDetail.setOrderId(orderId);
+            });
+
+            //8.保存订单详情，使用批量插入功能
+            this.orderDetailMapper.insertList(order.getOrderDetails());
+
+            //判断是否是秒杀订单
+            if (StringUtils.isNotEmpty(tag) && tag.equals(seck)) {
+                order.getOrderDetails().forEach(orderDetail -> {
+                    Stock stock = this.stockMapper.selectByPrimaryKey(orderDetail.getSkuId());
+                    stock.setStock(stock.getStock() - orderDetail.getNum());
+                    stock.setSeckillStock(stock.getSeckillStock() - orderDetail.getNum());
+                    this.stockMapper.updateByPrimaryKeySelective(stock);
+
+                    //新建秒杀订单
+                    SeckillOrder seckillOrder = new SeckillOrder();
+                    seckillOrder.setOrderId(orderId);
+                    seckillOrder.setSkuId(orderDetail.getSkuId());
+                    seckillOrder.setUserId(userInfo.getId());
+                    this.seckillOrderMapper.insert(seckillOrder);
+
+                });
+            } else {
+                //普通订单
+                order.getOrderDetails().forEach(orderDetail -> this.stockMapper.reduceStock(orderDetail.getSkuId(), orderDetail.getNum()));
+            }
+            return orderId;
+        } else {
+            return null;
         }
 
-
-        logger.debug("生成订单，订单编号：{}，用户id：{}", orderId, userInfo.getId());
-        return orderId;
     }
 
     /**
@@ -245,6 +271,7 @@ public class OrderServiceImpl implements OrderService {
                 if (StringUtils.isNotEmpty(tag) && seck.equals(tag)){
                     //检查秒杀库存
                     if (stock.getSeckillStock() - orderDetail.getNum() < 0){
+                        //不充足
                         skuId.add(orderDetail.getSkuId());
                     }
                 }

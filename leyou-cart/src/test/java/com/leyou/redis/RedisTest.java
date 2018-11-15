@@ -23,7 +23,8 @@ public class RedisTest {
 
     @Test
     public void test(){
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps("leyou:goods:detail");
-        hashOperations.put("1","22222222");
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps("leyou:seckill:stock");
+        System.out.println(hashOperations.get("2600242"));
+
     }
 }

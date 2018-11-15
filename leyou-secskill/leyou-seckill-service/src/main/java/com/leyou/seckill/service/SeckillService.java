@@ -1,6 +1,8 @@
 package com.leyou.seckill.service;
 
+
 import com.leyou.seckill.vo.SeckillGoods;
+import com.leyou.seckill.vo.SeckillMessage;
 import com.leyou.seckill.vo.SeckillParameter;
 
 import java.util.List;
@@ -29,4 +31,18 @@ public interface SeckillService {
      * @return
      */
     Long createOrder(SeckillGoods seckillGoods);
+
+
+    /**
+     * 检查库存
+     * @param skuId
+     * @return
+     */
+    boolean queryStock(Long skuId);
+
+    /**
+     * 发送秒杀信息到队列当中
+     * @param seckillMessage
+     */
+    void sendMessage(SeckillMessage seckillMessage);
 }

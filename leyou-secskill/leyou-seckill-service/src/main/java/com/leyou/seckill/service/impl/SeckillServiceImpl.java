@@ -2,6 +2,7 @@ package com.leyou.seckill.service.impl;
 
 import com.leyou.item.pojo.Sku;
 import com.leyou.item.pojo.Stock;
+import com.leyou.item.service.impl.GoodsServiceImpl;
 import com.leyou.order.pojo.Order;
 import com.leyou.order.pojo.OrderDetail;
 import com.leyou.seckill.client.GoodsClient;
@@ -11,7 +12,12 @@ import com.leyou.seckill.mapper.SkuMapper;
 import com.leyou.seckill.mapper.StockMapper;
 import com.leyou.seckill.service.SeckillService;
 import com.leyou.seckill.vo.SeckillGoods;
+import com.leyou.seckill.vo.SeckillMessage;
 import com.leyou.seckill.vo.SeckillParameter;
+import com.leyou.utils.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +52,12 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     private OrderClient orderClient;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeckillServiceImpl.class);
+
 
     /**
      * 添加秒杀商品
@@ -93,7 +105,13 @@ public class SeckillServiceImpl implements SeckillService {
     public List<SeckillGoods> querySeckillGoods() {
         Example example = new Example(SeckillGoods.class);
         example.createCriteria().andEqualTo("enable",true);
-        return this.seckillMapper.selectByExample(example);
+        List<SeckillGoods> list = this.seckillMapper.selectByExample(example);
+        list.forEach(goods -> {
+            Stock stock = this.stockMapper.selectByPrimaryKey(goods.getSkuId());
+            goods.setStock(stock.getSeckillStock());
+            goods.setSeckillTotal(stock.getSeckillTotal());
+        });
+        return list;
     }
 
     /**
@@ -102,6 +120,7 @@ public class SeckillServiceImpl implements SeckillService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long createOrder(SeckillGoods seckillGoods) {
 
         Order order = new Order();
@@ -128,16 +147,43 @@ public class SeckillServiceImpl implements SeckillService {
 
         order.setOrderDetails(Arrays.asList(orderDetail));
 
+
         String seck = "seckill";
         ResponseEntity<List<Long>> responseEntity = this.orderClient.createOrder(seck,order);
-
 
         if (responseEntity.getStatusCode() == HttpStatus.OK){
             //库存不足，返回null
             return null;
         }
-        //修改秒杀商品的库存
-
         return responseEntity.getBody().get(0);
+    }
+
+    /**
+     * 检查秒杀库存
+     * @param skuId
+     * @return
+     */
+    @Override
+    public boolean queryStock(Long skuId) {
+        Stock stock = this.stockMapper.selectByPrimaryKey(skuId);
+        if (stock.getSeckillStock() - 1 < 0){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 发送消息到秒杀队列当中
+     * @param seckillMessage
+     */
+    @Override
+    public void sendMessage(SeckillMessage seckillMessage) {
+        String json = JsonUtils.serialize(seckillMessage);
+        System.out.println(json);
+        try {
+            this.amqpTemplate.convertAndSend("order.seckill", json);
+        }catch (Exception e){
+            LOGGER.error("秒杀商品消息发送异常，商品id：{}",seckillMessage.getSeckillGoods().getSkuId(),e);
+        }
     }
 }

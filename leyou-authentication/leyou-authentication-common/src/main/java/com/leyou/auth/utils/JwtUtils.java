@@ -28,7 +28,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .claim(JwtConstans.JWT_KEY_ID, userInfo.getId())
                 .claim(JwtConstans.JWT_KEY_USER_NAME, userInfo.getUsername())
-                .setExpiration(DateTime.now().plusMinutes(expireMinutes).toDate())
+                .setExpiration(DateTime.now().plusDays(expireMinutes).toDate())
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
     }

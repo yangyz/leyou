@@ -46,9 +46,8 @@ public class OrderController {
             @ApiImplicitParam(name = "tag",required = true,value = "是否是秒杀订单")
     })
     public ResponseEntity<List<Long>> createOrder(@RequestParam("seck") String seck,@RequestBody @Valid Order order){
-        System.out.println(seck);
         List<Long> skuId = this.orderService.queryStock(seck,order);
-        if (skuId != null && skuId.size() != 0){
+        if (skuId.size() != 0){
             //库存不足
             return new ResponseEntity<>(skuId,HttpStatus.OK);
         }

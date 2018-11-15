@@ -1,6 +1,9 @@
 package com.leyou.seckill.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+
 import java.util.Date;
 
 /**
@@ -48,9 +51,11 @@ public class SeckillGoods {
     /**
      * 秒杀库存
      */
+    @JsonIgnore
     @Transient
     private Integer stock;
 
+    @JsonIgnore
     @Transient
     private Integer seckillTotal;
 
@@ -132,5 +137,21 @@ public class SeckillGoods {
 
     public void setEnable(Boolean enable) {
         this.enable = enable;
+    }
+
+    @Override
+    public String toString() {
+        return "SeckillGoods{" +
+                "id=" + id +
+                ", skuId=" + skuId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", seckillPrice=" + seckillPrice +
+                ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                ", enable=" + enable +
+                ", stock=" + stock +
+                ", seckillTotal=" + seckillTotal +
+                '}';
     }
 }

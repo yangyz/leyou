@@ -1,7 +1,6 @@
 package com.leyou.seckill.vo;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author: 98050

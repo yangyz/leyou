@@ -1,4 +1,5 @@
 import com.leyou.seckill.vo.SeckillParameter;
+
 import com.leyou.utils.JsonUtils;
 import org.junit.Test;
 

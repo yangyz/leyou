@@ -11,67 +11,10 @@
 
     <groupId>com.leyou.seckill</groupId>
     <artifactId>leyou-secskill</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>leyou-seckill-interface</module>
+        <module>leyou-seckill-service</module>
+    </modules>
 
-    <dependencies>
-        <!-- eureka -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-        <!-- feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <!-- web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!--商品微服务-->
-        <dependency>
-            <groupId>com.leyou.item.interface</groupId>
-            <artifactId>leyou-item-interface</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!--通用mapper-->
-        <dependency>
-            <groupId>tk.mybatis</groupId>
-            <artifactId>mapper-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- mybatis启动器 -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- mysql驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
-        <!--订单微服务-->
-        <dependency>
-            <groupId>com.leyou.order</groupId>
-            <artifactId>leyou-order-interface</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.leyou.service</groupId>
-            <artifactId>leyou-item-service</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-    </dependencies>
 </project>

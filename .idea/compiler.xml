@@ -17,7 +17,8 @@
         <module name="leyou-order-service" />
         <module name="leyou-registry" />
         <module name="leyou-search" />
-        <module name="leyou-secskill" />
+        <module name="leyou-seckill-interface" />
+        <module name="leyou-seckill-service" />
         <module name="leyou-sms" />
         <module name="leyou-upload" />
         <module name="leyou-user-interface" />
