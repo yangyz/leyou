@@ -1,5 +1,7 @@
 server:
   port: 8090
+  tomcat:
+    max-connections: 5000
 spring:
   application:
     name: seckill-service

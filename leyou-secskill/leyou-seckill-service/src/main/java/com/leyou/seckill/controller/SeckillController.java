@@ -68,20 +68,27 @@ public class SeckillController implements InitializingBean {
     @PostMapping("seck")
     public ResponseEntity<String> seckillOrder(@RequestBody SeckillGoods seckillGoods){
 
+        String result = "排队中";
         //1.读取库存，减一后更新缓存
         BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
         String s = (String) hashOperations.get(seckillGoods.getSkuId().toString());
+        if (s == null){
+            return ResponseEntity.ok(result);
+        }
         int stock = Integer.valueOf(s) - 1;
-        hashOperations.delete(seckillGoods.getSkuId().toString());
-        hashOperations.put(seckillGoods.getSkuId().toString(),String.valueOf(stock));
         //2.库存不足直接返回
         if (stock < 0){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.ok(result);
         }
-        //3.库存充足，请求入队
-        //3.1 获取用户信息
+        //3.更新库存
+        hashOperations.delete(seckillGoods.getSkuId().toString());
+        hashOperations.put(seckillGoods.getSkuId().toString(),String.valueOf(stock));
+
+        //4.库存充足，请求入队
+        //4.1 获取用户信息
         UserInfo userInfo = LoginInterceptor.getLoginUser();
         SeckillMessage seckillMessage = new SeckillMessage(userInfo,seckillGoods);
+        //4.2 发送消息
         this.seckillService.sendMessage(seckillMessage);
 
 
@@ -97,7 +104,6 @@ public class SeckillController implements InitializingBean {
 //        if (id == null){
 //           return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
 //        }
-        String result = "排队中";
         return ResponseEntity.ok(result);
     }
 
@@ -113,6 +119,9 @@ public class SeckillController implements InitializingBean {
             return;
         }
         BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
+        if (hashOperations.hasKey(KEY_PREFIX)){
+            hashOperations.delete(KEY_PREFIX);
+        }
         seckillGoods.forEach(goods -> {
             hashOperations.put(goods.getSkuId().toString(),goods.getStock().toString());
         });
