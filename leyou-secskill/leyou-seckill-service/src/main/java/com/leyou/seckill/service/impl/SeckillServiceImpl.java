@@ -5,9 +5,11 @@ import com.leyou.item.pojo.Stock;
 import com.leyou.item.service.impl.GoodsServiceImpl;
 import com.leyou.order.pojo.Order;
 import com.leyou.order.pojo.OrderDetail;
+import com.leyou.order.pojo.SeckillOrder;
 import com.leyou.seckill.client.GoodsClient;
 import com.leyou.seckill.client.OrderClient;
 import com.leyou.seckill.mapper.SeckillMapper;
+import com.leyou.seckill.mapper.SeckillOrderMapper;
 import com.leyou.seckill.mapper.SkuMapper;
 import com.leyou.seckill.mapper.StockMapper;
 import com.leyou.seckill.service.SeckillService;
@@ -55,6 +57,9 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     private AmqpTemplate amqpTemplate;
+
+    @Autowired
+    private SeckillOrderMapper seckillOrderMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SeckillServiceImpl.class);
 
@@ -185,5 +190,16 @@ public class SeckillServiceImpl implements SeckillService {
         }catch (Exception e){
             LOGGER.error("秒杀商品消息发送异常，商品id：{}",seckillMessage.getSeckillGoods().getSkuId(),e);
         }
+    }
+
+    @Override
+    public Long checkSeckillOrder(Long userId) {
+        Example example = new Example(SeckillOrder.class);
+        example.createCriteria().andEqualTo("userId",userId);
+        List<SeckillOrder> seckillOrders = this.seckillOrderMapper.selectByExample(example);
+        if (seckillOrders == null || seckillOrders.size() == 0){
+            return null;
+        }
+        return seckillOrders.get(0).getOrderId();
     }
 }

@@ -45,4 +45,11 @@ public interface SeckillService {
      * @param seckillMessage
      */
     void sendMessage(SeckillMessage seckillMessage);
+
+    /**
+     * 根据用户id查询秒杀订单
+     * @param userId
+     * @return
+     */
+    Long checkSeckillOrder(Long userId);
 }

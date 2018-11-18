@@ -40,6 +40,28 @@ public class SeckillController implements InitializingBean {
 
     private Map<Long,Boolean> localOverMap = new HashMap<>();
 
+
+    /**
+     * 系统初始化，初始化秒杀商品数量
+     * @throws Exception
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        //1.查询可以秒杀的商品
+        List<SeckillGoods> seckillGoods = this.seckillService.querySeckillGoods();
+        if (seckillGoods == null || seckillGoods.size() == 0){
+            return;
+        }
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
+        if (hashOperations.hasKey(KEY_PREFIX)){
+            hashOperations.delete(KEY_PREFIX);
+        }
+        seckillGoods.forEach(goods -> {
+            hashOperations.put(goods.getSkuId().toString(),goods.getStock().toString());
+            localOverMap.put(goods.getSkuId(),false);
+        });
+    }
+
     /**
      * 添加秒杀商品(后台)
      * @param seckillParameter
@@ -108,23 +130,18 @@ public class SeckillController implements InitializingBean {
     }
 
     /**
-     * 系统初始化，初始化秒杀商品数量
-     * @throws Exception
+     * 根据userId查询订单号
+     * @param userId
+     * @return
      */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        //1.查询可以秒杀的商品
-        List<SeckillGoods> seckillGoods = this.seckillService.querySeckillGoods();
-        if (seckillGoods == null || seckillGoods.size() == 0){
-            return;
+    @GetMapping("orderId")
+    public ResponseEntity<Long> checkSeckillOrder(Long userId){
+        Long result = this.seckillService.checkSeckillOrder(userId);
+        if (result == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
-        if (hashOperations.hasKey(KEY_PREFIX)){
-            hashOperations.delete(KEY_PREFIX);
-        }
-        seckillGoods.forEach(goods -> {
-            hashOperations.put(goods.getSkuId().toString(),goods.getStock().toString());
-            localOverMap.put(goods.getSkuId(),false);
-        });
+        return ResponseEntity.ok(result);
+
     }
+
 }
