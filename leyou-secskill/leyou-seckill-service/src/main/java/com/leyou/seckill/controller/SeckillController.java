@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,6 +37,8 @@ public class SeckillController implements InitializingBean {
     private StringRedisTemplate stringRedisTemplate;
 
     private static final String KEY_PREFIX = "leyou:seckill:stock";
+
+    private Map<Long,Boolean> localOverMap = new HashMap<>();
 
     /**
      * 添加秒杀商品(后台)
@@ -69,6 +73,13 @@ public class SeckillController implements InitializingBean {
     public ResponseEntity<String> seckillOrder(@RequestBody SeckillGoods seckillGoods){
 
         String result = "排队中";
+
+        //内存标记，减少redis访问
+        boolean over = localOverMap.get(seckillGoods.getSkuId());
+        if (over){
+            return ResponseEntity.ok(result);
+        }
+
         //1.读取库存，减一后更新缓存
         BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
         String s = (String) hashOperations.get(seckillGoods.getSkuId().toString());
@@ -78,6 +89,7 @@ public class SeckillController implements InitializingBean {
         int stock = Integer.valueOf(s) - 1;
         //2.库存不足直接返回
         if (stock < 0){
+            localOverMap.put(seckillGoods.getSkuId(),true);
             return ResponseEntity.ok(result);
         }
         //3.更新库存
@@ -92,23 +104,11 @@ public class SeckillController implements InitializingBean {
         this.seckillService.sendMessage(seckillMessage);
 
 
-
-//        //检查库存
-//        if (!this.seckillService.queryStock(seckillGoods.getSkuId())){
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-//        }
-//
-//        //1.创建订单
-//        Long id = this.seckillService.createOrder(seckillGoods);
-//        //2.判断秒杀是否成功
-//        if (id == null){
-//           return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-//        }
         return ResponseEntity.ok(result);
     }
 
     /**
-     * 初始化秒杀商品数量
+     * 系统初始化，初始化秒杀商品数量
      * @throws Exception
      */
     @Override
@@ -124,6 +124,7 @@ public class SeckillController implements InitializingBean {
         }
         seckillGoods.forEach(goods -> {
             hashOperations.put(goods.getSkuId().toString(),goods.getStock().toString());
+            localOverMap.put(goods.getSkuId(),false);
         });
     }
 }

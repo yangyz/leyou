@@ -75,7 +75,6 @@ public class SeckillListener {
     ))
     public void listenSeckill(String seck){
 
-        System.out.println(seck);
         SeckillMessage seckillMessage = JsonUtils.parse(seck,SeckillMessage.class);
         UserInfo userInfo = seckillMessage.getUserInfo();
         SeckillGoods seckillGoods = seckillMessage.getSeckillGoods();
