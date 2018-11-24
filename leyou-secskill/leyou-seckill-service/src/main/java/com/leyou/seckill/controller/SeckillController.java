@@ -2,6 +2,7 @@ package com.leyou.seckill.controller;
 
 
 import com.leyou.auth.entity.UserInfo;
+import com.leyou.response.Result;
 import com.leyou.seckill.access.AccessLimit;
 import com.leyou.seckill.interceptor.LoginInterceptor;
 import com.leyou.seckill.service.SeckillService;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +43,6 @@ public class SeckillController implements InitializingBean {
     private static final String KEY_PREFIX = "leyou:seckill:stock";
 
     private Map<Long,Boolean> localOverMap = new HashMap<>();
-
 
     /**
      * 系统初始化，初始化秒杀商品数量
@@ -172,4 +173,5 @@ public class SeckillController implements InitializingBean {
         }
         return ResponseEntity.ok(str);
     }
+
 }

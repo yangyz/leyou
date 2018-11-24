@@ -45,8 +45,11 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
+        List<String> excludePath = new ArrayList<>();
+        excludePath.add("/list");
+        excludePath.add("/addSeckill");
         registry.addInterceptor(loginInterceptor())
-                .addPathPatterns("/**");
+                .addPathPatterns("/**").excludePathPatterns(excludePath);
         registry.addInterceptor(accessInterceptor);
     }
 //

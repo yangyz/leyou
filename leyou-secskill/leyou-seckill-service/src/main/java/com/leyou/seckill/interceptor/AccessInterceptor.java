@@ -1,6 +1,8 @@
 package com.leyou.seckill.interceptor;
 
 import com.leyou.auth.entity.UserInfo;
+import com.leyou.response.CodeMsg;
+import com.leyou.response.Result;
 import com.leyou.seckill.access.AccessLimit;
 import com.leyou.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
             String key = request.getRequestURI();
             if (needLogin){
                 if (userInfo == null){
-                    render(response, "用户没有登录");
+                    render(response, CodeMsg.LOGIN_ERROR);
                     return false;
                 }
                 key += "_" + userInfo.getId();
@@ -57,7 +59,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
             }else if(Integer.valueOf(count) < maxCount){
                 redisTemplate.opsForValue().increment(key,1);
             }else {
-                render(response,"稍后再试");
+                render(response,CodeMsg.ACCESS_LIMIT_REACHED);
             }
 
         }
@@ -65,10 +67,12 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
         return super.preHandle(request, response, handler);
     }
 
-    private void render(HttpServletResponse response, String str) throws IOException {
-        OutputStream outputStream = response.getOutputStream();
-        outputStream.write(str.getBytes("UTF-8"));
-        outputStream.flush();
-        outputStream.close();
+    private void render(HttpServletResponse response, CodeMsg cm) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        OutputStream out = response.getOutputStream();
+        String str  = JsonUtils.serialize(Result.error(cm));
+        out.write(str.getBytes("UTF-8"));
+        out.flush();
+        out.close();
     }
 }
