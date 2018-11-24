@@ -2,12 +2,14 @@ package com.leyou.seckill.controller;
 
 
 import com.leyou.auth.entity.UserInfo;
+import com.leyou.seckill.access.AccessLimit;
 import com.leyou.seckill.interceptor.LoginInterceptor;
 import com.leyou.seckill.service.SeckillService;
 
 import com.leyou.seckill.vo.SeckillGoods;
 import com.leyou.seckill.vo.SeckillMessage;
 import com.leyou.seckill.vo.SeckillParameter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -91,38 +93,46 @@ public class SeckillController implements InitializingBean {
     }
 
 
-    @PostMapping("seck")
-    public ResponseEntity<String> seckillOrder(@RequestBody SeckillGoods seckillGoods){
+    @PostMapping("/{path}/seck")
+    public ResponseEntity<String> seckillOrder(@PathVariable("path") String path, @RequestBody SeckillGoods seckillGoods){
 
         String result = "排队中";
 
-        //内存标记，减少redis访问
+        UserInfo userInfo = LoginInterceptor.getLoginUser();
+
+        //1.验证路径
+        boolean check = this.seckillService.checkSeckillPath(seckillGoods.getId(),userInfo.getId(),path);
+        if (!check){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        //2.内存标记，减少redis访问
         boolean over = localOverMap.get(seckillGoods.getSkuId());
         if (over){
             return ResponseEntity.ok(result);
         }
 
-        //1.读取库存，减一后更新缓存
+        //3.读取库存，减一后更新缓存
         BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX);
         String s = (String) hashOperations.get(seckillGoods.getSkuId().toString());
         if (s == null){
             return ResponseEntity.ok(result);
         }
         int stock = Integer.valueOf(s) - 1;
-        //2.库存不足直接返回
+
+        //4.库存不足直接返回
         if (stock < 0){
             localOverMap.put(seckillGoods.getSkuId(),true);
             return ResponseEntity.ok(result);
         }
-        //3.更新库存
+        //5.更新库存
         hashOperations.delete(seckillGoods.getSkuId().toString());
         hashOperations.put(seckillGoods.getSkuId().toString(),String.valueOf(stock));
 
-        //4.库存充足，请求入队
-        //4.1 获取用户信息
-        UserInfo userInfo = LoginInterceptor.getLoginUser();
+        //6.库存充足，请求入队
+        //6.1 获取用户信息
         SeckillMessage seckillMessage = new SeckillMessage(userInfo,seckillGoods);
-        //4.2 发送消息
+        //6.2 发送消息
         this.seckillService.sendMessage(seckillMessage);
 
 
@@ -144,4 +154,22 @@ public class SeckillController implements InitializingBean {
 
     }
 
+    /**
+     * 创建秒杀路径
+     * @param goodsId
+     * @return
+     */
+    @AccessLimit(seconds = 5,maxCount = 5,needLogin = true)
+    @GetMapping("get_path/{goodsId}")
+    public ResponseEntity<String> getSeckillPath(@PathVariable("goodsId") Long goodsId){
+        UserInfo userInfo = LoginInterceptor.getLoginUser();
+        if (userInfo == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String str = this.seckillService.createPath(goodsId,userInfo.getId());
+        if (StringUtils.isEmpty(str)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(str);
+    }
 }

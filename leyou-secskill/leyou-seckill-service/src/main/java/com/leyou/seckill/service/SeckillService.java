@@ -52,4 +52,23 @@ public interface SeckillService {
      * @return
      */
     Long checkSeckillOrder(Long userId);
+
+
+    /**
+     * 创建秒杀地址
+     * @param goodsId
+     * @param id
+     * @return
+     */
+    String createPath(Long goodsId, Long id);
+
+    /**
+     * 验证秒杀地址
+     * @param goodsId
+     * @param id
+     * @param path
+     * @return
+     */
+    boolean checkSeckillPath(Long goodsId, Long id, String path);
+
 }

@@ -3,6 +3,7 @@ package com.leyou.seckill.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.leyou.seckill.interceptor.AccessInterceptor;
 import com.leyou.seckill.interceptor.LoginInterceptor;
 import com.leyou.seckill.properties.JwtProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,12 @@ public class MvcConfig implements WebMvcConfigurer {
         return new LoginInterceptor(jwtProperties);
     }
 
+    @Autowired
+    public AccessInterceptor accessInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
+        registry.addInterceptor(accessInterceptor);
 
         registry.addInterceptor(loginInterceptor())
                 .addPathPatterns("/**");

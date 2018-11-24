@@ -77,11 +77,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.leyou.service</groupId>
             <artifactId>leyou-item-service</artifactId>
             <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.leyou.seckill</groupId>
             <artifactId>leyou-seckill-interface</artifactId>

@@ -21,8 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -31,6 +34,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: 98050
@@ -61,7 +65,13 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private SeckillOrderMapper seckillOrderMapper;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SeckillServiceImpl.class);
+
+    private static final String KEY_PREFIX_PATH = "leyou:seckill:path";
 
 
     /**
@@ -192,6 +202,11 @@ public class SeckillServiceImpl implements SeckillService {
         }
     }
 
+    /**
+     * 根据用户id查询秒杀订单
+     * @param userId
+     * @return
+     */
     @Override
     public Long checkSeckillOrder(Long userId) {
         Example example = new Example(SeckillOrder.class);
@@ -202,4 +217,37 @@ public class SeckillServiceImpl implements SeckillService {
         }
         return seckillOrders.get(0).getOrderId();
     }
+
+    /**
+     * 创建秒杀地址
+     * @param goodsId
+     * @param id
+     * @return
+     */
+    @Override
+    public String createPath(Long goodsId, Long id) {
+        String str = new BCryptPasswordEncoder().encode(goodsId.toString()+id);
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX_PATH);
+        String key = id.toString() + "_" + goodsId;
+        hashOperations.put(key,str);
+        hashOperations.expire(60, TimeUnit.SECONDS);
+        return str;
+    }
+
+    /**
+     * 验证秒杀地址
+     * @param goodsId
+     * @param id
+     * @param path
+     * @return
+     */
+    @Override
+    public boolean checkSeckillPath(Long goodsId, Long id, String path) {
+        String key = id.toString() + "_" + goodsId;
+        BoundHashOperations<String,Object,Object> hashOperations = this.stringRedisTemplate.boundHashOps(KEY_PREFIX_PATH);
+        String encodePath = (String) hashOperations.get(key);
+        return new BCryptPasswordEncoder().matches(path,encodePath);
+    }
+
+
 }
