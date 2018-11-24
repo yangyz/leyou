@@ -159,7 +159,7 @@ public class SeckillController implements InitializingBean {
      * @param goodsId
      * @return
      */
-    @AccessLimit(seconds = 5,maxCount = 5,needLogin = true)
+    @AccessLimit(seconds = 20,maxCount = 5,needLogin = true)
     @GetMapping("get_path/{goodsId}")
     public ResponseEntity<String> getSeckillPath(@PathVariable("goodsId") Long goodsId){
         UserInfo userInfo = LoginInterceptor.getLoginUser();

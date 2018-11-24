@@ -5,9 +5,7 @@ import com.leyou.seckill.access.AccessLimit;
 import com.leyou.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -22,10 +20,11 @@ import java.util.concurrent.TimeUnit;
  * @Time: 2018-11-23 23:45
  * @Feature: 接口限流拦截器
  */
+@Service
 public class AccessInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    private RedisTemplate<String,Integer> redisTemplate;
+    private RedisTemplate<String,String> redisTemplate;
 
 
     @Override
@@ -45,20 +44,20 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
             String key = request.getRequestURI();
             if (needLogin){
                 if (userInfo == null){
-                    render(response, ResponseEntity.status(HttpStatus.NOT_FOUND));
+                    render(response, "用户没有登录");
                     return false;
                 }
                 key += "_" + userInfo.getId();
             }else {
                 //不需要登录，则什么也不做
             }
-            Integer count = redisTemplate.opsForValue().get(key);
+            String count = redisTemplate.opsForValue().get(key);
             if (count == null){
-                redisTemplate.opsForValue().set(key,1,seconds, TimeUnit.SECONDS);
-            }else if(count < maxCount){
+                redisTemplate.opsForValue().set(key,"1",seconds, TimeUnit.SECONDS);
+            }else if(Integer.valueOf(count) < maxCount){
                 redisTemplate.opsForValue().increment(key,1);
             }else {
-                render(response,ResponseEntity.status(HttpStatus.BAD_REQUEST));
+                render(response,"稍后再试");
             }
 
         }
@@ -66,9 +65,8 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
         return super.preHandle(request, response, handler);
     }
 
-    private void render(HttpServletResponse response, ResponseEntity.BodyBuilder status) throws IOException {
+    private void render(HttpServletResponse response, String str) throws IOException {
         OutputStream outputStream = response.getOutputStream();
-        String str = JsonUtils.serialize(status);
         outputStream.write(str.getBytes("UTF-8"));
         outputStream.flush();
         outputStream.close();
