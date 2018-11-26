@@ -20,6 +20,7 @@
         <module>leyou-cart</module>
         <module>leyou-order</module>
         <module>leyou-secskill</module>
+        <module>leyou-review</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -56,6 +57,7 @@
         <jwt.version>0.9.1</jwt.version>
         <wxpay.version>0.0.3</wxpay.version>
         <swagger.version>2.8.0</swagger.version>
+        <mongodb.version>2.1.0.RELEASE</mongodb.version>
     </properties>
 
     <dependencyManagement>
@@ -192,6 +194,12 @@
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                <version>${mongodb.version}</version>
             </dependency>
 
         </dependencies>
