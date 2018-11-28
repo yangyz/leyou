@@ -53,6 +53,7 @@ public class BrandController {
      */
     @PostMapping
     public ResponseEntity<Void>  saveBrand(Brand brand, @RequestParam("categories") List<Long> categories){
+        System.out.println(brand);
         this.brandService.saveBrand(brand, categories);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -76,7 +77,7 @@ public class BrandController {
      */
     @DeleteMapping("cid_bid/{bid}")
     public ResponseEntity<Void> deleteByBrandIdInCategoryBrand(@PathVariable("bid") Long bid){
-        System.out.println("删除中间表");
+        //System.out.println("删除中间表");
         this.brandService.deleteByBrandIdInCategoryBrand(bid);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

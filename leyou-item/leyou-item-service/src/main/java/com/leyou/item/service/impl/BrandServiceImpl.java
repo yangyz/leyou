@@ -72,7 +72,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBrand(Brand brand, List<Long> categories) {
-        System.out.println(brand);
+        //System.out.println(brand);
         // 新增品牌信息
         this.brandMapper.insertSelective(brand);
         // 新增品牌和分类中间表
@@ -89,12 +89,15 @@ public class BrandServiceImpl implements BrandService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateBrand(Brand brand,List<Long> categories) {
+        //删除原来的数据
+        deleteByBrandIdInCategoryBrand(brand.getId());
+
         // 修改品牌信息
         this.brandMapper.updateByPrimaryKeySelective(brand);
 
         //维护品牌和分类中间表
         for (Long cid : categories) {
-            System.out.println("cid:"+cid+",bid:"+brand.getId());
+            //System.out.println("cid:"+cid+",bid:"+brand.getId());
             this.brandMapper.insertCategoryBrand(cid, brand.getId());
         }
     }

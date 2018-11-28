@@ -103,7 +103,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<Review> findReviewBySpuId(RequestParam requestParam) {
         PageRequest pageRequest = PageRequest.of(requestParam.getPage()-1,requestParam.getDefaultSize());
-        return this.reviewDao.findReviewBySpuId(requestParam.getSpuId()+"",pageRequest);
+        return this.reviewDao.findReviewBySpuid(requestParam.getSpuId()+"",pageRequest);
     }
 
     /**

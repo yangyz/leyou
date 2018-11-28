@@ -16,5 +16,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 public interface ReviewDao extends MongoRepository<Review,String> {
 
-    Page<Review> findReviewBySpuId(String spuId, Pageable pageable);
+    /**
+     * 分页查询
+     * @param spuId
+     * @param pageable
+     * @return
+     */
+    Page<Review> findReviewBySpuid(String spuId, Pageable pageable);
 }
