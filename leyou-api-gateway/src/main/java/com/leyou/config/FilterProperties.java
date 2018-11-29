@@ -1,6 +1,12 @@
 package com.leyou.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -9,16 +15,19 @@ import java.util.List;
  * @Time: 2018-10-24 16:55
  * @Feature: 过滤白名单
  */
-@ConfigurationProperties(prefix = "leyou.filter")
+//@ConfigurationProperties(prefix = "leyou.filter")
+@Configuration
+@RefreshScope
 public class FilterProperties {
 
-    private List<String> allowPaths;
+    @Value("${leyou.filter.allowPaths}")
+    private String allowPaths;
 
-    public List<String> getAllowPaths() {
+    public String getAllowPaths() {
         return allowPaths;
     }
 
-    public void setAllowPaths(List<String> allowPaths) {
+    public void setAllowPaths(String allowPaths) {
         this.allowPaths = allowPaths;
     }
 }

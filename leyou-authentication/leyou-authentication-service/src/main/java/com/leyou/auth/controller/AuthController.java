@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Feature: 登录授权
  */
 @Controller
-@EnableConfigurationProperties(JwtProperties.class)
+//@EnableConfigurationProperties(JwtProperties.class)
 public class AuthController {
 
     @Autowired

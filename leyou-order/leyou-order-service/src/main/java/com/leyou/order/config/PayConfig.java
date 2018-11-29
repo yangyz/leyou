@@ -13,7 +13,7 @@ import java.io.InputStream;
  * @create: 2018-10-27
  **/
 @Configuration
-@EnableConfigurationProperties(PayProperties.class)
+//@EnableConfigurationProperties(PayProperties.class)
 public class PayConfig implements WXPayConfig {
 
     @Autowired

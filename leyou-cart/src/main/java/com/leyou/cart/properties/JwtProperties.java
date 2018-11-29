@@ -3,7 +3,10 @@ package com.leyou.cart.properties;
 import com.leyou.auth.utils.RsaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.security.PublicKey;
@@ -13,7 +16,9 @@ import java.security.PublicKey;
  * @Time: 2018-10-25 16:12
  * @Feature: jwt属性
  */
-@ConfigurationProperties(prefix = "leyou.jwt")
+//@ConfigurationProperties(prefix = "leyou.jwt")
+@Configuration
+@RefreshScope
 public class JwtProperties {
     /**
      * 公钥
@@ -23,11 +28,13 @@ public class JwtProperties {
     /**
      * 公钥地址
      */
+    @Value("${leyou.jwt.pubKeyPath}")
     private String pubKeyPath;
 
     /**
      * cookie名字
      */
+    @Value("${leyou.jwt.cookieName}")
     private String cookieName;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtProperties.class);

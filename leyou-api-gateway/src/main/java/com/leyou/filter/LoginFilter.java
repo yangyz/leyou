@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Author: 98050
@@ -22,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  * @Feature: 登录拦截器
  */
 @Component
-@EnableConfigurationProperties({JwtProperties.class,FilterProperties.class})
+//@EnableConfigurationProperties({JwtProperties.class,FilterProperties.class})
 public class LoginFilter extends ZuulFilter {
 
     @Autowired
@@ -61,7 +63,8 @@ public class LoginFilter extends ZuulFilter {
         boolean flag = false;
 
         //2.遍历允许访问的路径
-        for (String path : this.filterProperties.getAllowPaths()){
+        List<String> paths = Arrays.asList(this.filterProperties.getAllowPaths().split(" "));
+        for (String path : paths){
             if (requestUri.startsWith(path)){
                 flag = true;
                 break;

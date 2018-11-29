@@ -11,14 +11,17 @@
         <module name="leyou-authentication-common" />
         <module name="leyou-authentication-service" />
         <module name="leyou-cart" />
+        <module name="leyou-comment-service" />
+        <module name="leyou-comments-interface" />
+        <module name="leyou-comments-service" />
+        <module name="leyou-config" />
         <module name="leyou-goods-web" />
         <module name="leyou-item-interface" />
         <module name="leyou-item-service" />
+        <module name="leyou-mongondb" />
         <module name="leyou-order-interface" />
         <module name="leyou-order-service" />
         <module name="leyou-registry" />
-        <module name="leyou-review-interface" />
-        <module name="leyou-review-servie" />
         <module name="leyou-search" />
         <module name="leyou-seckill-interface" />
         <module name="leyou-seckill-service" />
@@ -26,12 +29,19 @@
         <module name="leyou-upload" />
         <module name="leyou-user-interface" />
         <module name="leyou-user-service" />
+        <module name="leyout-est" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="demo" target="1.8" />
+      <module name="leyou-comment" target="1.8" />
+      <module name="leyou-comment-interface" target="1.8" />
+      <module name="leyou-comment-service" target="1.8" />
+      <module name="leyou-mongondb" target="1.8" />
       <module name="leyou-review" target="1.8" />
+      <module name="leyou-review-interface" target="1.8" />
       <module name="leyou-review-service" target="1.8" />
+      <module name="leyou-review-servie" target="1.8" />
       <module name="leyou-test" target="1.8" />
     </bytecodeTargetLevel>
   </component>

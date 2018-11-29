@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @create: 2018-10-27
  **/
 @Configuration
-@EnableConfigurationProperties(IdWorkerProperties.class)
+//@EnableConfigurationProperties(IdWorkerProperties.class)
 public class IdWorkerConfig {
 
     @Bean

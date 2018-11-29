@@ -28,7 +28,7 @@ import java.util.List;
  **/
 @Configuration
 @EnableWebMvc
-@EnableConfigurationProperties(JwtProperties.class)
+//@EnableConfigurationProperties(JwtProperties.class)
 public class MvcConfig implements WebMvcConfigurer {
 
     @Autowired

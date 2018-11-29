@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
  * @Feature: 短信服务工具类
  */
 @Component
-@EnableConfigurationProperties(SmsProperties.class)
+//@EnableConfigurationProperties(SmsProperties.class)
 public class SmsUtils {
 
     @Autowired
