@@ -93,7 +93,12 @@ public class SeckillController implements InitializingBean {
         return ResponseEntity.ok(list);
     }
 
-
+    /**
+     * 秒杀
+     * @param path
+     * @param seckillGoods
+     * @return
+     */
     @PostMapping("/{path}/seck")
     public ResponseEntity<String> seckillOrder(@PathVariable("path") String path, @RequestBody SeckillGoods seckillGoods){
 

@@ -22,6 +22,7 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Arrays;
@@ -73,6 +74,7 @@ public class SeckillListener {
             ),
             key = {"order.seckill"}
     ))
+    @Transactional(rollbackFor = Exception.class)
     public void listenSeckill(String seck){
 
         SeckillMessage seckillMessage = JsonUtils.parse(seck,SeckillMessage.class);

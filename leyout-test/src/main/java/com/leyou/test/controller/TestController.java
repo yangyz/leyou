@@ -36,7 +36,6 @@ public class TestController {
     @GetMapping("list")
     public ResponseEntity<List<Brand>> test(){
         System.out.println(testIp.getIp());
-        //System.out.println(testIp.getPath());
         List<String> path = Arrays.asList(testIp.getPath().split(" "));
         for (String s : path){
             System.out.println(s);

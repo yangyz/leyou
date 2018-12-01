@@ -21,7 +21,7 @@
         <module>leyou-order</module>
         <module>leyou-secskill</module>
         <module>leyou-config</module>
-        <module>leyout-est</module>
+        <module>leyout-test</module>
         <module>leyou-comments</module>
     </modules>
     <packaging>pom</packaging>

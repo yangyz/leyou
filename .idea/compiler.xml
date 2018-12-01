@@ -29,7 +29,7 @@
         <module name="leyou-upload" />
         <module name="leyou-user-interface" />
         <module name="leyou-user-service" />
-        <module name="leyout-est" />
+        <module name="leyout-test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
