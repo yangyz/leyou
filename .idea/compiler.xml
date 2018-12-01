@@ -29,7 +29,6 @@
         <module name="leyou-upload" />
         <module name="leyou-user-interface" />
         <module name="leyou-user-service" />
-        <module name="leyout-test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -43,6 +42,7 @@
       <module name="leyou-review-service" target="1.8" />
       <module name="leyou-review-servie" target="1.8" />
       <module name="leyou-test" target="1.8" />
+      <module name="leyout-test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
