@@ -67,17 +67,18 @@ public class Review implements Serializable {
      */
     private Integer type;
 
-    public Review(String _id, String spuid, String content, Date publishtime, String userid, String nickname, Integer visits, Integer thumbup, List<String> images, Integer comment, Boolean iscomment, String parentid, Boolean isparent, Integer type) {
-        this._id = _id;
+    /**
+     * json转换需要
+     */
+    public Review() {
+    }
+
+    public Review(String spuid, String content, String userid, String nickname, List<String> images, Boolean iscomment, String parentid, Boolean isparent, Integer type) {
         this.spuid = spuid;
         this.content = content;
-        this.publishtime = publishtime;
         this.userid = userid;
         this.nickname = nickname;
-        this.visits = visits;
-        this.thumbup = thumbup;
         this.images = images;
-        this.comment = comment;
         this.iscomment = iscomment;
         this.parentid = parentid;
         this.isparent = isparent;

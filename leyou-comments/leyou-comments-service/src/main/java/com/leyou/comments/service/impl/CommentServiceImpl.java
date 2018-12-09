@@ -1,8 +1,8 @@
 package com.leyou.comments.service.impl;
-import com.leyou.comments.bo.RequestParam;
-import com.leyou.comments.dao.ReviewDao;
+import com.leyou.comments.bo.CommentRequestParam;
+import com.leyou.comments.dao.CommentDao;
 import com.leyou.comments.pojo.Review;
-import com.leyou.comments.service.ReviewService;
+import com.leyou.comments.service.CommentService;
 import com.leyou.utils.IdWorker;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @Author: 98050
@@ -24,10 +25,10 @@ import java.util.List;
  * @Feature:
  */
 @Service
-public class ReviewServiceImpl implements ReviewService {
+public class CommentServiceImpl implements CommentService {
 
     @Autowired
-    private ReviewDao reviewDao;
+    private CommentDao commentDao;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -38,17 +39,26 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review findOne(String id) {
-        Review review = reviewDao.findById(id).get();
-        return review;
+        Optional<Review> optional = commentDao.findById(id);
+        return optional.orElse(null);
     }
 
     /**
      * 新增
-     *
+     * 注意：一个用户只能发表一个顶级评论，可以追评
      * @param review
      */
     @Override
-    public void add(Review review) {
+    public boolean add(Review review) {
+        //检查用户是否发表过顶级评论过
+        if (review.getIsparent()) {
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where("userid").is(review.getUserid()));
+            List<Review> old = this.mongoTemplate.find(query2, Review.class);
+            if (old.size() > 0 && old.get(0).getIsparent()) {
+                return false;
+            }
+        }
         /**
          * 设置主键
          */
@@ -67,7 +77,8 @@ public class ReviewServiceImpl implements ReviewService {
             update.inc("visits",1);
             this.mongoTemplate.updateFirst(query,update,"review");
         }
-        reviewDao.save(review);
+        commentDao.save(review);
+        return true;
     }
 
     /**
@@ -77,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
      */
     @Override
     public void update(Review review) {
-        reviewDao.save(review);
+        commentDao.save(review);
     }
 
     /**
@@ -87,18 +98,18 @@ public class ReviewServiceImpl implements ReviewService {
      */
     @Override
     public void deleteById(String id) {
-        reviewDao.deleteById(id);
+        commentDao.deleteById(id);
     }
 
     /**
      * 查询某一商品下的所有顶级评论
-     * @param requestParam
+     * @param commentRequestParam
      * @return
      */
     @Override
-    public Page<Review> findReviewBySpuId(RequestParam requestParam) {
-        PageRequest pageRequest = PageRequest.of(requestParam.getPage()-1,requestParam.getDefaultSize());
-        return this.reviewDao.findReviewBySpuid(requestParam.getSpuId()+"",pageRequest);
+    public Page<Review> findReviewBySpuId(CommentRequestParam commentRequestParam) {
+        PageRequest pageRequest = PageRequest.of(commentRequestParam.getPage()-1, commentRequestParam.getDefaultSize());
+        return this.commentDao.findReviewBySpuid(commentRequestParam.getSpuId()+"",pageRequest);
     }
 
     /**

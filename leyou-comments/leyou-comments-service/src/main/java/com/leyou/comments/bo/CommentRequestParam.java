@@ -5,7 +5,7 @@ package com.leyou.comments.bo;
  * @Time: 2018-11-26 21:40
  * @Feature:
  */
-public class RequestParam {
+public class CommentRequestParam {
     /**
      * 商品id
      */

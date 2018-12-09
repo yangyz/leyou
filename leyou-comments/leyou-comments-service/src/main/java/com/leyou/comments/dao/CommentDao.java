@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Time: 2018-11-26 20:51
  * @Feature:
  */
-public interface ReviewDao extends MongoRepository<Review,String> {
+public interface CommentDao extends MongoRepository<Review,String> {
 
     /**
      * 分页查询

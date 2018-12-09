@@ -1,6 +1,6 @@
 package com.leyou.comments.service;
 
-import com.leyou.comments.bo.RequestParam;
+import com.leyou.comments.bo.CommentRequestParam;
 import com.leyou.comments.pojo.Review;
 import org.springframework.data.domain.Page;
 
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
  * @Time: 2018-11-26 15:40
  * @Feature:
  */
-public interface ReviewService {
+public interface CommentService {
 
     /**
      * 根据评论id查询
@@ -22,10 +22,10 @@ public interface ReviewService {
 
     /**
      * 新增评论
-     *
      * @param review
+     * @return
      */
-    void add(Review review);
+    boolean add(Review review);
 
     /**
      * 修改评论
@@ -43,10 +43,10 @@ public interface ReviewService {
 
     /**
      * 查询某一商品下的所有顶级评论
-     * @param requestParam
+     * @param commentRequestParam
      * @return
      */
-    Page<Review> findReviewBySpuId(RequestParam requestParam);
+    Page<Review> findReviewBySpuId(CommentRequestParam commentRequestParam);
 
     /**
      * 评论点赞

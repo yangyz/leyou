@@ -41,30 +41,12 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         List<String> excludePath = new ArrayList<>();
-        excludePath.add("/swagger-ui.html");
-        excludePath.add("/swagger-resources/**");
-        excludePath.add("/webjars/**");
-
+        excludePath.add("/list");
+        excludePath.add("/commentId/**");
+        excludePath.add("/comment");
+        excludePath.add("/visit/**");
         registry.addInterceptor(loginInterceptor())
                 .addPathPatterns("/**").excludePathPatterns(excludePath);
-    }
-
-
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-
-        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
-                new MappingJackson2HttpMessageConverter();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
-        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
-        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
-        objectMapper.registerModule(simpleModule);
-        jackson2HttpMessageConverter.setObjectMapper(objectMapper);
-        converters.add(jackson2HttpMessageConverter);
-        converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
     }
 
 }
