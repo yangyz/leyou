@@ -39,6 +39,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Review findOne(String id) {
+        //判断空
         Optional<Review> optional = commentDao.findById(id);
         return optional.orElse(null);
     }
