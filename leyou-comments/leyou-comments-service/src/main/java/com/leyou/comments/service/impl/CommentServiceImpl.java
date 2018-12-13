@@ -1,5 +1,6 @@
 package com.leyou.comments.service.impl;
 import com.leyou.comments.bo.CommentRequestParam;
+import com.leyou.comments.client.OrderClient;
 import com.leyou.comments.dao.CommentDao;
 import com.leyou.comments.pojo.Review;
 import com.leyou.comments.service.CommentService;
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,9 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private IdWorker idWorker;
 
+    @Autowired
+    private OrderClient orderClient;
+
 
     @Override
     public Review findOne(String id) {
@@ -46,20 +51,29 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * 新增
-     * 注意：一个用户只能发表一个顶级评论，可以追评
+     * 注意：一个用户只能发表一个顶级评论，可以追评（在一个订单中）
      * @param review
      */
     @Override
-    public boolean add(Review review) {
-        //检查用户是否发表过顶级评论过
+    @Transactional(rollbackFor = Exception.class)
+    public boolean add(Long orderId,Review review) {
+        //1.检查用户是否在该商品下发表过顶级评论过
         if (review.getIsparent()) {
             Query query2 = new Query();
             query2.addCriteria(Criteria.where("userid").is(review.getUserid()));
+            query2.addCriteria(Criteria.where("orderid").is(review.getOrderid()));
+            query2.addCriteria(Criteria.where("spuid").is(review.getSpuid()));
             List<Review> old = this.mongoTemplate.find(query2, Review.class);
             if (old.size() > 0 && old.get(0).getIsparent()) {
                 return false;
             }
         }
+        //2.修改订单状态,6代表评价状态
+        boolean result = this.orderClient.updateOrderStatus(orderId, 6).getBody();
+        if (!result){
+            return false;
+        }
+        //3.添加评论
         /**
          * 设置主键
          */

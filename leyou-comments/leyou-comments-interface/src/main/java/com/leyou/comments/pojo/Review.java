@@ -14,6 +14,11 @@ public class Review implements Serializable {
 
     @Id
     private String _id;
+
+    /**
+     * 订单id
+     */
+    private String orderid;
     /**
      * 商品id
      */
@@ -73,7 +78,8 @@ public class Review implements Serializable {
     public Review() {
     }
 
-    public Review(String spuid, String content, String userid, String nickname, List<String> images, Boolean iscomment, String parentid, Boolean isparent, Integer type) {
+    public Review(String orderid,String spuid, String content, String userid, String nickname, List<String> images, Boolean iscomment, String parentid, Boolean isparent, Integer type) {
+        this.orderid = orderid;
         this.spuid = spuid;
         this.content = content;
         this.userid = userid;
@@ -83,6 +89,14 @@ public class Review implements Serializable {
         this.parentid = parentid;
         this.isparent = isparent;
         this.type = type;
+    }
+
+    public String getOrderid() {
+        return orderid;
+    }
+
+    public void setOrderid(String orderid) {
+        this.orderid = orderid;
     }
 
     public String get_id() {

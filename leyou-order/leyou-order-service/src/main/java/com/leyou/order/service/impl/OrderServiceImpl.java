@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.leyou.auth.entity.UserInfo;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.pojo.Stock;
+import com.leyou.order.client.GoodsClient;
 import com.leyou.order.interceptor.LoginInterceptor;
 import com.leyou.order.mapper.*;
 import com.leyou.order.pojo.Order;
@@ -12,6 +13,8 @@ import com.leyou.order.pojo.OrderDetail;
 import com.leyou.order.pojo.OrderStatus;
 import com.leyou.order.pojo.SeckillOrder;
 import com.leyou.order.service.OrderService;
+import com.leyou.order.service.OrderStatusService;
+import com.leyou.order.vo.OrderStatusMessage;
 import com.leyou.utils.IdWorker;
 import com.leyou.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -51,6 +56,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private OrderStatusService orderStatusService;
+
+    @Autowired
+    private GoodsClient goodsClient;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private SeckillOrderMapper seckillOrderMapper;
@@ -161,9 +175,16 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Boolean updateOrderStatus(Long id, Integer status) {
+        UserInfo userInfo = LoginInterceptor.getLoginUser();
+        Long spuId = this.goodsClient.querySkuById(findSkuIdByOrderId(id)).getSpuId();
+
         OrderStatus orderStatus = new OrderStatus();
         orderStatus.setOrderId(id);
         orderStatus.setStatus(status);
+
+        //延时消息
+        OrderStatusMessage orderStatusMessage = new OrderStatusMessage(id,userInfo.getId(),userInfo.getUsername(),spuId,1);
+        OrderStatusMessage orderStatusMessage2 = new OrderStatusMessage(id,userInfo.getId(),userInfo.getUsername(),spuId,2);
         //1.根据状态判断要修改的时间
         switch (status){
             case 2:
@@ -173,10 +194,14 @@ public class OrderServiceImpl implements OrderService {
             case 3:
                 //3.发货时间
                 orderStatus.setConsignTime(new Date());
+                //发送消息到延迟队列，防止用户忘记确认收货
+                orderStatusService.sendMessage(orderStatusMessage);
+                orderStatusService.sendMessage(orderStatusMessage2);
                 break;
             case 4:
                 //4.确认收货，订单结束
                 orderStatus.setEndTime(new Date());
+                orderStatusService.sendMessage(orderStatusMessage2);
                 break;
             case 5:
                 //5.交易失败，订单关闭
@@ -236,5 +261,19 @@ public class OrderServiceImpl implements OrderService {
         });
         return skuId;
     }
+
+    /**
+     * 根据订单id查询其skuId
+     * @param id
+     * @return
+     */
+    public Long findSkuIdByOrderId(Long id){
+        Example example = new Example(OrderDetail.class);
+        example.createCriteria().andEqualTo("orderId", id);
+        List<OrderDetail> orderDetail = this.orderDetailMapper.selectByExample(example);
+        return orderDetail.get(0).getSkuId();
+    }
+
+
 
 }

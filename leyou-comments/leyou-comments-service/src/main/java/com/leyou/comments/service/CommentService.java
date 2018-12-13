@@ -23,9 +23,10 @@ public interface CommentService {
     /**
      * 新增评论
      * @param review
+     * @param orderId
      * @return
      */
-    boolean add(Review review);
+    boolean add(Long orderId,Review review);
 
     /**
      * 修改评论

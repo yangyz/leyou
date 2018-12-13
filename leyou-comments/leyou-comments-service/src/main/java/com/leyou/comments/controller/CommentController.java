@@ -78,12 +78,13 @@ public class CommentController {
      * @param review
      * @return
      */
-    @PostMapping("comment")
-    public ResponseEntity<Void> addReview(@RequestBody Review review){
-        boolean result = this.commentService.add(review);
+    @PostMapping("comment/{orderId}")
+    public ResponseEntity<Void> addReview(@PathVariable("orderId") Long orderId,@RequestBody Review review){
+        boolean result = this.commentService.add(orderId,review);
         if (!result){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

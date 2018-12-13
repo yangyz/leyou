@@ -194,7 +194,6 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     public void sendMessage(SeckillMessage seckillMessage) {
         String json = JsonUtils.serialize(seckillMessage);
-        System.out.println(json);
         try {
             this.amqpTemplate.convertAndSend("order.seckill", json);
         }catch (Exception e){

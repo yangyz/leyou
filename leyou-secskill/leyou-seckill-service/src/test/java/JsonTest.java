@@ -18,4 +18,6 @@ public class JsonTest {
         seckillParameter.setEndTime(new Date());
         System.out.println(JsonUtils.serialize(seckillParameter));
     }
+
+
 }

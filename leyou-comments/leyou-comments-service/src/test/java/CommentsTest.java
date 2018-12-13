@@ -41,9 +41,9 @@ public class CommentsTest {
             String parentId = 0 + "";
             boolean isparent = true;
             int type = i % 5;
-            Review review = new Review(spuId, content, userId, nickname, images, iscomment, parentId,isparent,type);
+            //Review review = new Review(spuId, content, userId, nickname, images, iscomment, parentId,isparent,type);
 
-            commentService.add(review);
+            //commentService.add(review);
         }
     }
 
@@ -58,9 +58,9 @@ public class CommentsTest {
         String parentId = "1071767095416725504";
         boolean isparent = false;
         int type = 4;
-        Review review = new Review(spuId, content, userId, nickname, images, iscomment, parentId,isparent,type);
+        //Review review = new Review(spuId, content, userId, nickname, images, iscomment, parentId,isparent,type);
 
-        commentService.add(review);
+        //commentService.add(review);
     }
 
     @Test

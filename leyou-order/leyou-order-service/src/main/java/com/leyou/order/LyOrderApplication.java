@@ -16,6 +16,7 @@ import tk.mybatis.spring.annotation.MapperScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableFeignClients
 @EnableSwagger2
 @MapperScan(value = "com.leyou.order.mapper")
 public class LyOrderApplication {

@@ -158,6 +158,11 @@ public class GoodsController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * 根据id查询sku
+     * @param id
+     * @return
+     */
     @GetMapping("/sku/{id}")
     public ResponseEntity<Sku> querySkuById(@PathVariable("id") Long id){
         Sku sku = this.goodsService.querySkuById(id);
@@ -166,4 +171,5 @@ public class GoodsController {
         }
         return ResponseEntity.ok(sku);
     }
+
 }

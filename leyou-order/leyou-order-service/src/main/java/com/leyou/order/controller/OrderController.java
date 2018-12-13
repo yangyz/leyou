@@ -34,6 +34,8 @@ public class OrderController {
     @Autowired
     private PayHelper payHelper;
 
+    private static int count = 0;
+
     /**
      * 创建订单
      * @param order 订单对象
@@ -135,7 +137,7 @@ public class OrderController {
     })
     public ResponseEntity<Boolean> updateOrderStatus(@PathVariable("id") Long id,@PathVariable("status") Integer status){
         Boolean result = this.orderService.updateOrderStatus(id,status);
-        if (result == null){
+        if (!result){
             //返回400
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

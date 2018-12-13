@@ -74,6 +74,7 @@ public class AddressController {
     })
     public ResponseEntity<Void> updateAddressByUserId(@RequestBody Address address){
         this.addressService.updateAddressByUserId(address);
+        System.out.println("controller");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
